@@ -1,8 +1,9 @@
-// ignore_for_file: file_names, must_be_immutable
+// ignore_for_file: file_names, must_be_immutable, use_build_context_synchronously
 
 import 'package:chat_app/core/theme/app-colors/app-colors-light.dart';
+import 'package:chat_app/provider/auth-provider.dart';
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
@@ -13,8 +14,12 @@ class LoginPage extends StatelessWidget {
     return emailPattern.hasMatch(email);
   }
 
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    final subAuthProvider = Provider.of<AuthProvider>(context, listen: false);
     return SafeArea(
         child: Scaffold(
       body: Container(
@@ -32,7 +37,7 @@ class LoginPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Image.asset(
-                'assets/image/9.jpg',
+                'assets/image/login.jpg',
                 width: 300,
                 height: 300,
               ),
@@ -45,6 +50,7 @@ class LoginPage extends StatelessWidget {
                         width: 370,
                         height: 50,
                         child: TextFormField(
+                          controller: _emailController,
                           validator: (email) {
                             if (email == null || email.isEmpty) {
                               return 'Please Enter Your Email';
@@ -73,6 +79,7 @@ class LoginPage extends StatelessWidget {
                         width: 370,
                         height: 50,
                         child: TextFormField(
+                          controller: _passwordController,
                           validator: (password) {
                             if (password == null || password.isEmpty) {
                               return 'Please Enter Your Password';
@@ -102,7 +109,22 @@ class LoginPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 15),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          try {
+                            if (formKey.currentState!.validate()) {
+                              await subAuthProvider.logIn(
+                                  emailController: _emailController,
+                                  passwordController: _passwordController);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text('Login Is Sucess')));
+                              Navigator.popAndPushNamed(context, '/splash');
+                            }
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Faild Login $e')));
+                          }
+                        },
                         style: ButtonStyle(
                           shape: MaterialStateProperty.all(
                             RoundedRectangleBorder(
@@ -117,8 +139,8 @@ class LoginPage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Text('If You don\'t Have any Account? '),
-                          GestureDetector(
-                            onTap: () =>
+                          TextButton(
+                            onPressed: () =>
                                 Navigator.popAndPushNamed(context, '/signup'),
                             child: const Text(
                               'Signup',
@@ -126,7 +148,7 @@ class LoginPage extends StatelessWidget {
                                   color: AppColorLight.primaryColor,
                                   fontWeight: FontWeight.bold),
                             ),
-                          ),
+                          )
                         ],
                       )
                     ],

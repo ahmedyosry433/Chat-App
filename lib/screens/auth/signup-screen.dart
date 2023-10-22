@@ -26,7 +26,7 @@ class Signuppage extends StatelessWidget {
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               Image.asset(
-                'assets/image/81.jpg',
+                'assets/image/signup.jpg',
                 width: 300,
                 height: 250,
               ),

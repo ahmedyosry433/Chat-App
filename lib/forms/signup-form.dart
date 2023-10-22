@@ -1,9 +1,12 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, use_build_context_synchronously
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:string_validator/string_validator.dart';
 
 import '../core/theme/app-colors/app-colors-light.dart';
+import '../provider/auth-provider.dart';
 
 // ignore: must_be_immutable
 class SignupForm extends StatelessWidget {
@@ -26,6 +29,7 @@ class SignupForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final subAuthProvider = Provider.of<AuthProvider>(context, listen: false);
     return Form(
       key: formKey,
       child: Column(
@@ -139,17 +143,19 @@ class SignupForm extends StatelessWidget {
                     controller: _passwordController,
                     keyboardType: TextInputType.visiblePassword,
                     decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.password),
-                        hintText: 'Password',
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: const BorderSide(
-                              color: AppColorLight.primaryColor),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30),
-                            borderSide: const BorderSide(
-                                color: AppColorLight.sceondColor))),
+                      prefixIcon: const Icon(Icons.password),
+                      hintText: 'Password',
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide:
+                            const BorderSide(color: AppColorLight.primaryColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide:
+                            const BorderSide(color: AppColorLight.sceondColor),
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(
@@ -161,7 +167,7 @@ class SignupForm extends StatelessWidget {
                         return 'Enter Your Confirm Password';
                       } else if (password.length < 6) {
                         return 'Password must be at least 6 characters';
-                      } else if (password != _confirmpasswordController.text) {
+                      } else if (password != _passwordController.text) {
                         return 'Password Not Matching';
                       }
 
@@ -220,9 +226,28 @@ class SignupForm extends StatelessWidget {
           ),
           const SizedBox(height: 15),
           ElevatedButton(
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                Navigator.popAndPushNamed(context, '/login');
+            onPressed: () async {
+              User? user = FirebaseAuth.instance.currentUser;
+
+              try {
+                if (formKey.currentState!.validate() && user != null) {
+                  await subAuthProvider.signUp(
+                    emailController: _emailController,
+                    passwordController: _passwordController,
+                  );
+
+                  await subAuthProvider.addUserInfoInFirebase(
+                      firstName: _firstNameController.text,
+                      lastName: _lastNameController.text,
+                      phone: _phoneController.text);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Signup Successfully')));
+
+                  Navigator.popAndPushNamed(context, '/splash');
+                }
+              } catch (e) {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text('Faild Signup $e')));
               }
             },
             style: ButtonStyle(
