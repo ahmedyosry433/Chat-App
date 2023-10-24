@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, avoid_print
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -66,6 +66,19 @@ class AuthProvider with ChangeNotifier {
 
   Future logOut() async {
     await FirebaseAuth.instance.signOut();
+  }
+
+   Future<void> resetPassword({required String email}) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      print('______________Error sending password reset email: $e');
+    }
+  }
+   bool visibility = true;
+  visibilityPassword() {
+    visibility = !visibility;
+    notifyListeners();
   }
 
   // Future<List<UserInformation>> getUsersFromFirestore() async {

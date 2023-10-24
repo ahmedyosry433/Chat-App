@@ -9,12 +9,14 @@ import 'screens/auth/login-screen.dart';
 import 'screens/auth/signup-screen.dart';
 import 'firebase_options.dart';
 import 'screens/chat/chat-screen.dart';
+import 'screens/chat/main-chat-screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -31,6 +33,7 @@ class MyApp extends StatelessWidget {
           ListenableProvider<AuthProvider>(create: (context) => AuthProvider()),
         ],
         child: MaterialApp(
+          debugShowCheckedModeBanner: false,
           theme: getThemeDataLight(),
           initialRoute: '/splash',
           routes: {
@@ -38,6 +41,7 @@ class MyApp extends StatelessWidget {
             '/splash': (context) => const Splash(),
             '/login': (context) => LoginPage(),
             '/chatdetails': (context) => const ChatDetails(),
+            '/chatmain': (context) => const ChatMain(),
           },
         ));
   }
