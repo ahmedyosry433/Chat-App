@@ -29,7 +29,7 @@ class SignupForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subAuthProvider = Provider.of<AuthProvider>(context, listen: false);
+    final subAuthProvider = Provider.of<AuthProvider>(context);
     return Form(
       key: formKey,
       child: Column(
@@ -141,6 +141,7 @@ class SignupForm extends StatelessWidget {
                       return null;
                     },
                     controller: _passwordController,
+                    obscureText: subAuthProvider.visibility,
                     keyboardType: TextInputType.visiblePassword,
                     decoration: InputDecoration(
                       prefixIcon: const Icon(Icons.password),
@@ -174,11 +175,16 @@ class SignupForm extends StatelessWidget {
                       return null;
                     },
                     controller: _confirmpasswordController,
+                    obscureText: subAuthProvider.visibility,
                     keyboardType: TextInputType.visiblePassword,
                     decoration: InputDecoration(
                         suffixIcon: TextButton(
-                          onPressed: () {},
-                          child: const Icon(Icons.visibility),
+                          onPressed: () {
+                            subAuthProvider.visibilityPassword();
+                          },
+                          child: Icon(subAuthProvider.visibility
+                              ? Icons.visibility
+                              : Icons.visibility_off),
                         ),
                         hintText: 'Confirm',
                         enabledBorder: OutlineInputBorder(
