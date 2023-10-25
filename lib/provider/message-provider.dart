@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 class MessageProvider with ChangeNotifier {
   sentMessage({required TextEditingController entryMessageController}) async {
@@ -48,5 +49,14 @@ class MessageProvider with ChangeNotifier {
     }
     notifyListeners();
     return {};
+  }
+
+  String convertDataTime(Timestamp timeStamp) {
+    Timestamp timestamp = timeStamp;
+    DateTime dateTime = timestamp.toDate();
+    var formatter = DateFormat('hh:mm a');
+    String formattedDateTime = formatter.format(dateTime);
+    notifyListeners();
+    return formattedDateTime;
   }
 }

@@ -6,7 +6,6 @@ import 'package:chat_app/widgets/chat-sent-message.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-
 class ChatDetails extends StatefulWidget {
   const ChatDetails({super.key});
 

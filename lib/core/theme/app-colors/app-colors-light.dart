@@ -9,4 +9,5 @@ class AppColorLight {
   static const blackColor = Colors.black;
   static const gradientColorStart = Color.fromARGB(255, 143, 203, 252);
   static const gradientColorEnd = Color.fromARGB(127, 220, 237, 252);
+  static const blueColor = Colors.blue;
 }
