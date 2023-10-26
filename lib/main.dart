@@ -5,6 +5,7 @@ import 'package:chat_app/screens/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'provider/main-chat-provider.dart';
 import 'screens/auth/login-screen.dart';
 import 'screens/auth/signup-screen.dart';
 import 'firebase_options.dart';
@@ -31,6 +32,8 @@ class MyApp extends StatelessWidget {
           ListenableProvider<MessageProvider>(
               create: (context) => MessageProvider()),
           ListenableProvider<AuthProvider>(create: (context) => AuthProvider()),
+          ListenableProvider<MainChatProvider>(
+              create: (context) => MainChatProvider()),
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,

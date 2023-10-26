@@ -2,6 +2,7 @@
 
 import 'package:chat_app/core/theme/app-colors/app-colors-light.dart';
 import 'package:chat_app/provider/auth-provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,6 +11,8 @@ class AppbarMainChat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    final subAuthProvider = Provider.of<AuthProvider>(context);
     return Container(
       height: 100,
       decoration: const BoxDecoration(
@@ -27,7 +30,7 @@ class AppbarMainChat extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const Padding(
-            padding: EdgeInsets.only(left: 5),
+            padding: EdgeInsets.only(left: 10),
             child: Text(
               'Chats',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
@@ -35,7 +38,7 @@ class AppbarMainChat extends StatelessWidget {
           ),
           Expanded(
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 70, vertical: 30),
+              margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 30),
               decoration: BoxDecoration(
                   color: AppColorLight.whiteColor,
                   borderRadius: BorderRadius.circular(30)),
@@ -53,8 +56,9 @@ class AppbarMainChat extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 5),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                const SizedBox(height: 5),
                 SizedBox(
                   width: 50,
                   height: 50,
@@ -64,12 +68,14 @@ class AppbarMainChat extends StatelessWidget {
                     ),
                   ),
                 ),
-                TextButton(
-                    onPressed: () {
+                Text('${subAuthProvider.userAlreadyexist['firstName']}'),
+                const SizedBox(height: 5),
+                GestureDetector(
+                    onTap: () {
                       Provider.of<AuthProvider>(context, listen: false)
                           .logOut();
                     },
-                    child: Text('Login',
+                    child: Text('Logout',
                         style: Theme.of(context).textTheme.titleSmall)),
               ],
             ),

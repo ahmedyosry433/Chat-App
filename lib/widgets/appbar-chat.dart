@@ -1,9 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:chat_app/core/theme/app-colors/app-colors-light.dart';
-import 'package:chat_app/provider/auth-provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class AppbarChat extends StatelessWidget {
   const AppbarChat({super.key});
@@ -60,11 +58,6 @@ class AppbarChat extends StatelessWidget {
           ),
           Row(
             children: [
-              IconButton(
-                  onPressed: () {
-                    Provider.of<AuthProvider>(context, listen: false).logOut();
-                  },
-                  icon: const Icon(Icons.logout_sharp)),
               IconButton(
                   onPressed: () {}, icon: const Icon(Icons.video_call_rounded)),
               IconButton(onPressed: () {}, icon: const Icon(Icons.call_sharp)),

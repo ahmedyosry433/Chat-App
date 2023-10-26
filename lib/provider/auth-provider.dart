@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../model/user-model.dart';
+
 class AuthProvider with ChangeNotifier {
   dynamic userAlreadyexist;
 
@@ -68,31 +70,43 @@ class AuthProvider with ChangeNotifier {
     await FirebaseAuth.instance.signOut();
   }
 
-   Future<void> resetPassword({required String email}) async {
+  Future<void> resetPassword({required String email}) async {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
     } catch (e) {
       print('______________Error sending password reset email: $e');
     }
   }
-   bool visibility = true;
+
+  bool visibility = true;
   visibilityPassword() {
     visibility = !visibility;
     notifyListeners();
   }
 
-  // Future<List<UserInformation>> getUsersFromFirestore() async {
-  //   QuerySnapshot userSnapshots =
-  //       await FirebaseFirestore.instance.collection('user').get();
+  List<UserInformation> allUsersFormFirebase = [];
 
-  //   print('________________________________');
-  //   List<UserInformation> users = userSnapshots.docs.map((userDoc) {
-  //     final data = userDoc.data() as Map<String, dynamic>;
+  Future<void> getUsersFromFirestore() async {
+    QuerySnapshot userSnapshots =
+        await FirebaseFirestore.instance.collection('user').get();
 
-  //     print('________________________________$data');
-  //     return UserInformation.fromJson(userDoc as Map<String, dynamic>);
-  //   }).toList();
-  //   print('________________________________$users');
-  //   return users;
-  // }
+    print('_______________1_________________');
+    List<UserInformation> users = userSnapshots.docs.map((userDoc) {
+      final data = userDoc.data();
+      print('________________2________________$data');
+      print('________________3________________$allUsersFormFirebase');
+
+      return UserInformation(
+          email: userDoc['email'],
+          firstName: userDoc['firstName'],
+          lastName: userDoc['lastName'],
+          phone: userDoc['phone'],
+          userId: userDoc['userId']);
+    }).toList();
+
+    allUsersFormFirebase = users;
+
+    print(
+        '_______________4_________${allUsersFormFirebase.length}_______$allUsersFormFirebase');
+  }
 }

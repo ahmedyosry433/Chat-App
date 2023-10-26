@@ -1,5 +1,6 @@
 // ignore_for_file: file_names, prefer_typing_uninitialized_variables, unused_import
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserInformation {
@@ -16,7 +17,7 @@ class UserInformation {
       required this.phone,
       required this.email});
 
-  factory UserInformation.fromJson(Map<String, dynamic> data) {
+  factory UserInformation.fromJson(Map<String,dynamic> data) {
     return UserInformation(
       firstName: data['firstname'],
       lastName: data['lastname'],
