@@ -41,6 +41,8 @@ dependencies:
   cloud_firestore: ^4.11.0
   firebase_auth: ^4.11.1
   intl: ^0.18.1
+  emoji_picker_flutter: ^1.6.2
+  image_picker: ^1.0.4
   
 
 dev_dependencies:

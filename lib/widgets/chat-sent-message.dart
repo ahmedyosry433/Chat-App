@@ -4,7 +4,7 @@ import 'package:chat_app/core/theme/app-colors/app-colors-light.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import '../model/user-model.dart';
 import '../provider/message-provider.dart';
 
@@ -14,7 +14,7 @@ class ChatSentMessage extends StatelessWidget {
   UserInformation? user;
   String currentUserId = FirebaseAuth.instance.currentUser!.uid;
   final TextEditingController _entryMessageController = TextEditingController();
-  
+
   String createChatId() {
     final currentUser = FirebaseAuth.instance.currentUser!.uid;
     final userReceiving = user!.userId;

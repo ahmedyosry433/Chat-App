@@ -1,8 +1,11 @@
 // ignore_for_file: file_names, avoid_print
 
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../model/user-model.dart';
 
@@ -86,6 +89,13 @@ class AuthProvider with ChangeNotifier {
 
   List<UserInformation> allUsersFormFirebase = [];
 
+  List<UserInformation> filterUsers(String currentUserId) {
+    notifyListeners();
+    return allUsersFormFirebase
+        .where((user) => user.userId != currentUserId)
+        .toList();
+  }
+
   Future<void> getUsersFromFirestore() async {
     QuerySnapshot userSnapshots =
         await FirebaseFirestore.instance.collection('user').get();
@@ -108,5 +118,19 @@ class AuthProvider with ChangeNotifier {
 
     print(
         '_______________4_________${allUsersFormFirebase.length}_______$allUsersFormFirebase');
+  }
+
+
+  File? imageProfile;
+  Future<void> pickImageProfile(ImageSource source) async {
+    final pick = ImagePicker();
+    final pickedFile = await pick.pickImage(source: source);
+    if (pickedFile != null) {
+      imageProfile = File(pickedFile.path);
+      print('_______provider____picker');
+      print('_______P____picker$imageProfile');
+
+      notifyListeners();
+    }
   }
 }

@@ -11,6 +11,7 @@ class AppbarMainChat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final subAuthProvider = Provider.of<AuthProvider>(context);
+    final imagefrompicker = Provider.of<AuthProvider>(context).imageProfile;
     return Container(
       height: 100,
       decoration: const BoxDecoration(
@@ -57,12 +58,20 @@ class AppbarMainChat extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 const SizedBox(height: 5),
-                SizedBox(
-                  width: 50,
-                  height: 50,
-                  child: CircleAvatar(
-                    child: Image.asset(
-                      'assets/image/avatar.png',
+                GestureDetector(
+                  onTap: () => Navigator.pushNamed(context, '/profile'),
+                  child: SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: CircleAvatar(
+                      radius: 50,
+                      foregroundImage: imagefrompicker == null
+                          ? const NetworkImage(
+                              'https://upload.wikimedia.org/wikipedia/commons/9/9a/No_avatar.png')
+                          : null,
+                      backgroundImage: imagefrompicker != null
+                          ? FileImage(imagefrompicker)
+                          : null,
                     ),
                   ),
                 ),

@@ -1,6 +1,7 @@
 import 'package:chat_app/core/theme/theme-data/theme-data-light.dart';
 import 'package:chat_app/provider/auth-provider.dart';
 import 'package:chat_app/provider/message-provider.dart';
+import 'package:chat_app/screens/auth/profile.dart';
 import 'package:chat_app/screens/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
             '/splash': (context) => const Splash(),
             '/login': (context) => LoginPage(),
             '/chatmain': (context) => const ChatMain(),
+            '/profile': (context) =>  Profile(),
           },
         ));
   }

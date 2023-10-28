@@ -50,7 +50,8 @@ class _ChatMainState extends State<ChatMain> {
                   child: Expanded(
                     child: ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemCount: subAuthProvider.allUsersFormFirebase.length,
+                        itemCount:
+                            subAuthProvider.filterUsers(user!.uid).length,
                         itemBuilder: ((context, index) {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -88,7 +89,7 @@ class _ChatMainState extends State<ChatMain> {
                 ),
                 Expanded(
                   child: ListView.builder(
-                      itemCount: subAuthProvider.allUsersFormFirebase.length,
+                      itemCount: subAuthProvider.filterUsers(user!.uid).length,
                       itemBuilder: ((context, index) {
                         return GestureDetector(
                           onTap: () => Navigator.push(
