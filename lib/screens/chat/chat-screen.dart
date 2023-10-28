@@ -1,32 +1,15 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, must_be_immutable
 
 import 'package:chat_app/widgets/appbar-chat.dart';
 import 'package:chat_app/widgets/chat-message.dart';
 import 'package:chat_app/widgets/chat-sent-message.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class ChatDetails extends StatefulWidget {
-  const ChatDetails({super.key});
+import '../../model/user-model.dart';
 
-  @override
-  State<ChatDetails> createState() => _ChatDetailsState();
-}
-
-class _ChatDetailsState extends State<ChatDetails> {
-  User? user = FirebaseAuth.instance.currentUser;
-
-  // getUserInfo() async {
-  //   User? user = FirebaseAuth.instance.currentUser;
-  //   await Provider.of<MessageProvider>(context, listen: false)
-  //       .getUserMessageByUid(userUid: user!.uid);
-  // }
-
-  @override
-  void initState() {
-    super.initState();
-    // getUserInfo();
-  }
+class ChatDetails extends StatelessWidget {
+  ChatDetails({super.key, required this.user});
+  UserInformation user;
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +17,14 @@ class _ChatDetailsState extends State<ChatDetails> {
         child: Scaffold(
       body: Column(
         children: [
-          const AppbarChat(),
-          const Expanded(child: ChatMessage()),
-          ChatSentMessage(),
+          AppbarChat(
+            userinfor: user,
+          ),
+          Expanded(
+              child: ChatMessage(
+            userInfor: user,
+          )),
+          ChatSentMessage(user: user),
         ],
       ),
     ));

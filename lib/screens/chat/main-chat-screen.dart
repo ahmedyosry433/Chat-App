@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../provider/auth-provider.dart';
+import 'chat-screen.dart';
 
 class ChatMain extends StatefulWidget {
   const ChatMain({super.key});
@@ -23,6 +24,7 @@ class _ChatMainState extends State<ChatMain> {
     getUsersFromFirestore();
     super.initState();
   }
+
   getUsersFromFirestore() {
     if (!isLoading) {
       context.read<AuthProvider>().getUserByUid(user!.uid);
@@ -30,7 +32,6 @@ class _ChatMainState extends State<ChatMain> {
       isLoading = true;
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -90,8 +91,13 @@ class _ChatMainState extends State<ChatMain> {
                       itemCount: subAuthProvider.allUsersFormFirebase.length,
                       itemBuilder: ((context, index) {
                         return GestureDetector(
-                          onTap: () =>
-                              Navigator.pushNamed(context, '/chatdetails'),
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ChatDetails(
+                                        user: subAuthProvider
+                                            .allUsersFormFirebase[index],
+                                      ))),
                           child: SizedBox(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),

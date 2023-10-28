@@ -6,19 +6,24 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 class MessageProvider with ChangeNotifier {
-  sentMessage({required TextEditingController entryMessageController}) async {
+  sentMessage(
+      {required TextEditingController entryMessageController,
+      required String chatId}) async {
     final entryMessage = entryMessageController.text;
 
     if (entryMessage.trim().isEmpty) {
       return;
     }
-
+    // get users to instance uid
     final User user = FirebaseAuth.instance.currentUser!;
-
     final userData =
         await FirebaseFirestore.instance.collection('user').doc(user.uid).get();
 
-    await FirebaseFirestore.instance.collection('chat').add({
+    await FirebaseFirestore.instance
+        .collection('chat')
+        .doc(chatId)
+        .collection('message')
+        .add({
       'text': entryMessage,
       'createdAt': Timestamp.now(),
       'userId': user.uid,
@@ -52,11 +57,15 @@ class MessageProvider with ChangeNotifier {
   }
 
   String convertDataTime(Timestamp timeStamp) {
-    Timestamp timestamp = timeStamp;
-    DateTime dateTime = timestamp.toDate();
-    var formatter = DateFormat('hh:mm a');
-    String formattedDateTime = formatter.format(dateTime);
+    var format = DateFormat('hh:mm a').format(timeStamp.toDate());
     notifyListeners();
-    return formattedDateTime;
+    return format;
   }
+
+  // String createChatId() {
+  //   final currentUser = FirebaseAuth.instance.currentUser!.uid;
+  //   final userReceiving = user!.userId;
+  //   List<String> sortedUserIds = [currentUser, userReceiving]..sort();
+  //   return sortedUserIds.join('_');
+  // }
 }

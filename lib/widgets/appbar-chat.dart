@@ -1,11 +1,12 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, must_be_immutable
 
 import 'package:chat_app/core/theme/app-colors/app-colors-light.dart';
+import 'package:chat_app/model/user-model.dart';
 import 'package:flutter/material.dart';
 
 class AppbarChat extends StatelessWidget {
-  const AppbarChat({super.key});
-
+  AppbarChat({super.key, required this.userinfor});
+  UserInformation userinfor;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,15 +41,16 @@ class AppbarChat extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 5),
-              const Column(
+              Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Person name',
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                    '${userinfor.firstName} ${userinfor.lastName}',
+                    style: const TextStyle(
+                        fontSize: 17, fontWeight: FontWeight.bold),
                   ),
-                  Text(
+                  const Text(
                     'Last Seen',
                     style: TextStyle(fontSize: 12),
                   ),

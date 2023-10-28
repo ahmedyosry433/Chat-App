@@ -1,6 +1,7 @@
-// ignore_for_file: file_names, avoid_print
+// ignore_for_file: file_names, avoid_print, must_be_immutable
 
 import 'package:chat_app/core/theme/app-colors/app-colors-light.dart';
+import 'package:chat_app/model/user-model.dart';
 import 'package:chat_app/provider/message-provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ChatMessage extends StatefulWidget {
-  const ChatMessage({super.key});
-
+  ChatMessage({super.key, required this.userInfor});
+  UserInformation userInfor;
   @override
   State<ChatMessage> createState() => _ChatMessageState();
 }
@@ -29,20 +30,28 @@ class _ChatMessageState extends State<ChatMessage> {
     try {
       if (user != null) {
         signInUser = user!;
-        print('____________________________${signInUser.email}');
       }
     } catch (e) {
-      print('________________________________$e');
+      print(
+          '___________from getCurrentUser in chatMessage_____________________$e');
     }
+  }
+
+  String createChatId() {
+    final currentUser = FirebaseAuth.instance.currentUser!.uid;
+    final userReceiving = widget.userInfor.userId;
+    List<String> sortedUserIds = [currentUser, userReceiving]..sort();
+    return sortedUserIds.join('_');
   }
 
   @override
   Widget build(BuildContext context) {
-    final subMessageProvider =
-        Provider.of<MessageProvider>(context, listen: false);
+    final subMessageProvider = Provider.of<MessageProvider>(context);
     return StreamBuilder(
       stream: FirebaseFirestore.instance
           .collection('chat')
+          .doc(createChatId())
+          .collection('message')
           .orderBy('createdAt', descending: true)
           .snapshots(),
       builder: (context, snapshot) {
@@ -129,21 +138,3 @@ class _ChatMessageState extends State<ChatMessage> {
     );
   }
 }
-// Container(
-//                     height: 70,
-//                     decoration: BoxDecoration(
-//                         color: AppColorLight.gradientColorEnd,
-//                         borderRadius: BorderRadius.circular(16)),
-//                     child: ListTile(
-//                       leading: const CircleAvatar(),
-//                       title: Text(
-//                           '${loadedMessage[index].data()['firstName']} ${loadedMessage[index].data()['lastName']}',
-//                           style: const TextStyle(
-//                               fontSize: 14, color: Colors.black)),
-//                       subtitle: Text('${loadedMessage[index].data()['text']}',
-//                           style: const TextStyle(
-//                               fontSize: 12, color: Colors.grey)),
-//                       trailing: const Text('10:12 am',
-//                           style: TextStyle(color: Colors.black)),
-//                     ),
-//                   ),

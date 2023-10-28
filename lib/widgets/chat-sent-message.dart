@@ -1,14 +1,27 @@
 // ignore_for_file: file_names
 
 import 'package:chat_app/core/theme/app-colors/app-colors-light.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../model/user-model.dart';
 import '../provider/message-provider.dart';
 
+// ignore: must_be_immutable
 class ChatSentMessage extends StatelessWidget {
-  ChatSentMessage({super.key});
+  ChatSentMessage({super.key, required this.user});
+  UserInformation? user;
+  String currentUserId = FirebaseAuth.instance.currentUser!.uid;
   final TextEditingController _entryMessageController = TextEditingController();
+  
+  String createChatId() {
+    final currentUser = FirebaseAuth.instance.currentUser!.uid;
+    final userReceiving = user!.userId;
+    List<String> sortedUserIds = [currentUser, userReceiving]..sort();
+    return sortedUserIds.join('_');
+  }
+
   @override
   Widget build(BuildContext context) {
     final subProviderMessage = Provider.of<MessageProvider>(context);
@@ -30,11 +43,7 @@ class ChatSentMessage extends StatelessWidget {
                         border: InputBorder.none,
                         hintText: 'Send Message',
                         icon: IconButton(
-                            onPressed: () {
-                              subProviderMessage.sentMessage(
-                                  entryMessageController:
-                                      _entryMessageController);
-                            },
+                            onPressed: () {},
                             icon: const Icon(
                               Icons.emoji_emotions,
                               color: Color.fromARGB(190, 0, 0, 0),
@@ -59,9 +68,9 @@ class ChatSentMessage extends StatelessWidget {
           IconButton(
               onPressed: () async {
                 try {
-                  await Provider.of<MessageProvider>(context, listen: false)
-                      .sentMessage(
-                          entryMessageController: _entryMessageController);
+                  await subProviderMessage.sentMessage(
+                      entryMessageController: _entryMessageController,
+                      chatId: createChatId());
                 } catch (e) {
                   ScaffoldMessenger.of(context)
                       .showSnackBar(SnackBar(content: Text('Faild Send $e')));
