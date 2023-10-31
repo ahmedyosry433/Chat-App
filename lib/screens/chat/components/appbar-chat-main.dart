@@ -1,6 +1,5 @@
 // ignore_for_file: file_names, use_build_context_synchronously
 
-import 'package:chat_app/core/constants/const.dart';
 import 'package:chat_app/core/theme/app-colors/app-colors-light.dart';
 import 'package:chat_app/provider/auth-provider.dart';
 import 'package:flutter/material.dart';

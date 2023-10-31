@@ -3,7 +3,6 @@
 import 'dart:io';
 
 import 'package:chat_app/core/constants/const.dart';
-import 'package:chat_app/provider/message-provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -204,5 +203,6 @@ class AuthProvider with ChangeNotifier {
     if (querySnapshot.docs.isNotEmpty) {
       return await querySnapshot.docs[0]['text'];
     }
+    return null;
   }
 }

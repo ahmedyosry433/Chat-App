@@ -74,7 +74,6 @@ class MessageProvider with ChangeNotifier {
 
     final querySnapshot = await query.get();
     if (querySnapshot.docs.isNotEmpty) {
-      print('__________________$lastMessage');
 
       return await querySnapshot.docs[0]['text'];
     }

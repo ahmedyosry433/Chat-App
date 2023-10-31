@@ -30,10 +30,7 @@ class _ChatMainState extends State<ChatMain> {
   getUsersFromFirestore() {
     if (!isLoading) {
       context.read<AuthProvider>().getUserByUid(user!.uid);
-      print('-------------?');
-      print(1);
       context.read<AuthProvider>().getUsersFromFirestore();
-      print(3);
       isLoading = true;
     }
   }
@@ -159,7 +156,7 @@ class _ChatMainState extends State<ChatMain> {
                                                   fontSize: 15,
                                                   fontWeight: FontWeight.w700)),
                                           Text(
-                                            '${allUsers.lastMessage}',
+                                            allUsers.lastMessage,
                                             style: const TextStyle(
                                                 fontSize: 11,
                                                 color: Colors.grey),
