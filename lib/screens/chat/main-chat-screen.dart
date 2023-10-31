@@ -30,8 +30,10 @@ class _ChatMainState extends State<ChatMain> {
   getUsersFromFirestore() {
     if (!isLoading) {
       context.read<AuthProvider>().getUserByUid(user!.uid);
+      print('-------------?');
+      print(1);
       context.read<AuthProvider>().getUsersFromFirestore();
-
+      print(3);
       isLoading = true;
     }
   }
@@ -59,7 +61,7 @@ class _ChatMainState extends State<ChatMain> {
           : Column(
               children: [
                 const AppbarMainChat(),
-                subAuthProvider.filterUsersOnline().isEmpty
+                subAuthProvider.filterAllUsersOnline.isEmpty
                     ? const Text('No Active Users')
                     : SizedBox(
                         height: 100,
@@ -123,6 +125,9 @@ class _ChatMainState extends State<ChatMain> {
                       itemBuilder: ((context, index) {
                         final allUsers =
                             subAuthProvider.filterAllUsersFormFirebase[index];
+                        subMessageProvider.getLastMessage(
+                            createChatId:
+                                createChatId(userId: allUsers.userId));
                         return GestureDetector(
                           onTap: () => Navigator.push(
                               context,
@@ -154,7 +159,7 @@ class _ChatMainState extends State<ChatMain> {
                                                   fontSize: 15,
                                                   fontWeight: FontWeight.w700)),
                                           Text(
-                                            '${subMessageProvider.getLastMessage(createChatId: createChatId(userId: allUsers.userId))}${subMessageProvider.lastMessage}',
+                                            '${allUsers.lastMessage}',
                                             style: const TextStyle(
                                                 fontSize: 11,
                                                 color: Colors.grey),

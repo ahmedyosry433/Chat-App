@@ -10,6 +10,7 @@ class UserInformation {
   String phone;
   String email;
   bool isOnline;
+  String lastMessage ;
   // String imageUrl;
 
   UserInformation({
@@ -19,6 +20,8 @@ class UserInformation {
     required this.phone,
     required this.email,
     required this.isOnline,
+    required this.lastMessage
+
     // required this.imageUrl,
   });
 
@@ -30,6 +33,7 @@ class UserInformation {
       userId: data['userId'],
       email: data['email'],
       isOnline: data['isOnline'],
+      lastMessage: data['lastMessage'],
       // imageUrl: data['imagUrl'],
     );
   }

@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:chat_app/core/constants/const.dart';
+import 'package:chat_app/provider/message-provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -105,7 +106,6 @@ class AuthProvider with ChangeNotifier {
   List<UserInformation> filterAllUsersOnline = [];
 
   List<UserInformation> filterUsersOnline() {
-    print('_________________AAAAAAAAAAAAA');
     filterAllUsersOnline = filterAllUsersFormFirebase
         .where((user) => user.isOnline == true)
         .toList();
@@ -142,25 +142,29 @@ class AuthProvider with ChangeNotifier {
   Future<void> getUsersFromFirestore() async {
     QuerySnapshot userSnapshots =
         await FirebaseFirestore.instance.collection('user').get();
-
-    print('_______________1_________________');
-    List<UserInformation> users = userSnapshots.docs.map((userDoc) {
-      final data = userDoc.data();
-      print('________________2________________$data');
-      print('________________3________________$allUsersFormFirebase');
-
-      return UserInformation(
-        email: userDoc['email'],
-        firstName: userDoc['firstName'],
-        lastName: userDoc['lastName'],
-        phone: userDoc['phone'],
-        userId: userDoc['userId'],
-        isOnline: userDoc['isOnline'],
-        // imageUrl: userDoc['imagUrl'],
-      );
-    }).toList();
-
+    List<UserInformation> users = [];
+    final currntUser = FirebaseAuth.instance.currentUser!;
+    for (var userDoc in userSnapshots.docs) {
+      List<String> sortedUserIds = [currntUser.uid, userDoc['userId']]..sort();
+      String? lastMessage =
+          await getLastMessage(createChatId: sortedUserIds.join('_'));
+      users.add(UserInformation(
+          email: userDoc['email'],
+          firstName: userDoc['firstName'],
+          lastName: userDoc['lastName'],
+          phone: userDoc['phone'],
+          userId: userDoc['userId'],
+          isOnline: userDoc['isOnline'],
+          lastMessage: lastMessage ?? ''
+          //
+          // imageUrl: userDoc['imagUrl'],
+          ));
+    }
     allUsersFormFirebase = users;
+    filterUsers(currntUser.uid);
+    filterUsersOnline();
+    //stop loading
+    notifyListeners();
   }
 
 // -----------------image picker----------------------
@@ -184,7 +188,21 @@ class AuthProvider with ChangeNotifier {
 
     await storgeRef.putFile(pickedImageProfile!);
     imageUrlFromFirbase = await storgeRef.getDownloadURL();
-
     notifyListeners();
+  }
+
+  Future<String?> getLastMessage({required String createChatId}) async {
+    final firestore = FirebaseFirestore.instance;
+    final query = firestore
+        .collection('chat')
+        .doc(createChatId)
+        .collection('message')
+        .orderBy('createdAt', descending: true)
+        .limit(1);
+
+    final querySnapshot = await query.get();
+    if (querySnapshot.docs.isNotEmpty) {
+      return await querySnapshot.docs[0]['text'];
+    }
   }
 }
