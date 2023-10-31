@@ -62,6 +62,26 @@ class MessageProvider with ChangeNotifier {
     return format;
   }
 
+  String? lastMessage;
+  Future<String?> getLastMessage({required String createChatId}) async {
+    final firestore = FirebaseFirestore.instance;
+    final query = firestore
+        .collection('chat')
+        .doc(createChatId)
+        .collection('message')
+        .orderBy('createdAt', descending: true)
+        .limit(1);
+
+    final querySnapshot = await query.get();
+    if (querySnapshot.docs.isNotEmpty) {
+      lastMessage = await querySnapshot.docs[0]['text'];
+      print('__________________$lastMessage');
+
+      return await querySnapshot.docs[0]['text'];
+    }
+
+    return null;
+  }
   // String createChatId() {
   //   final currentUser = FirebaseAuth.instance.currentUser!.uid;
   //   final userReceiving = user!.userId;

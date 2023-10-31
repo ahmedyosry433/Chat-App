@@ -2,15 +2,17 @@
 
 import 'dart:io';
 
+import 'package:chat_app/core/constants/const.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../model/user-model.dart';
 
 class AuthProvider with ChangeNotifier {
-  dynamic userAlreadyexist;
+//-------------- Authantication --------------------
 
   Future<void> signUp({
     required TextEditingController emailController,
@@ -20,9 +22,54 @@ class AuthProvider with ChangeNotifier {
       email: emailController.text.trim(),
       password: passwordController.text.trim(),
     );
+    setIsOnilne(isOnline: true);
+    notifyListeners();
+  }
+
+  Future logIn(
+      {required TextEditingController emailController,
+      required TextEditingController passwordController}) async {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim());
+
+    setIsOnilne(isOnline: true);
 
     notifyListeners();
   }
+
+  Future logOut() async {
+    setIsOnilne(isOnline: false);
+    await FirebaseAuth.instance.signOut();
+    notifyListeners();
+  }
+
+  Future<void> resetPassword({required String email}) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      print('______________Error sending password reset email: $e');
+    }
+  }
+
+//-------------- Set Data ----------------------------
+
+  Future setIsOnilne({required bool isOnline}) async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    await FirebaseFirestore.instance.collection('user').doc(user!.uid).update({
+      'isOnline': isOnline,
+    });
+    notifyListeners();
+  }
+
+  bool visibility = true;
+  visibilityPassword() {
+    visibility = !visibility;
+    notifyListeners();
+  }
+
+  //-------Add Users To Firebase ---------------------
 
   Future<void> addUserInfoInFirebase({
     required String firstName,
@@ -37,9 +84,39 @@ class AuthProvider with ChangeNotifier {
       'lastName': lastName,
       'phone': phone,
       'email': user.email,
+      'isOnline': false,
+      'imageUrl': Constants.defualtImageUrl,
     });
     notifyListeners();
   }
+
+// --------Filter users--------------------
+
+  List<UserInformation> filterAllUsersFormFirebase = [];
+
+  List<UserInformation> filterUsers(String currentUserId) {
+    filterAllUsersFormFirebase = allUsersFormFirebase
+        .where((user) => user.userId != currentUserId)
+        .toList();
+    notifyListeners();
+    return filterAllUsersFormFirebase;
+  }
+
+  List<UserInformation> filterAllUsersOnline = [];
+
+  List<UserInformation> filterUsersOnline() {
+    print('_________________AAAAAAAAAAAAA');
+    filterAllUsersOnline = filterAllUsersFormFirebase
+        .where((user) => user.isOnline == true)
+        .toList();
+
+    notifyListeners();
+    return filterAllUsersOnline;
+  }
+
+  //-------------Get Users ----------------------
+
+  dynamic userAlreadyexist;
 
   Future<Map<String, dynamic>> getUserByUid(String userUid) async {
     try {
@@ -60,41 +137,7 @@ class AuthProvider with ChangeNotifier {
     return {};
   }
 
-  Future logIn(
-      {required TextEditingController emailController,
-      required TextEditingController passwordController}) async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim());
-    notifyListeners();
-  }
-
-  Future logOut() async {
-    await FirebaseAuth.instance.signOut();
-  }
-
-  Future<void> resetPassword({required String email}) async {
-    try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-    } catch (e) {
-      print('______________Error sending password reset email: $e');
-    }
-  }
-
-  bool visibility = true;
-  visibilityPassword() {
-    visibility = !visibility;
-    notifyListeners();
-  }
-
   List<UserInformation> allUsersFormFirebase = [];
-
-  List<UserInformation> filterUsers(String currentUserId) {
-    notifyListeners();
-    return allUsersFormFirebase
-        .where((user) => user.userId != currentUserId)
-        .toList();
-  }
 
   Future<void> getUsersFromFirestore() async {
     QuerySnapshot userSnapshots =
@@ -107,30 +150,41 @@ class AuthProvider with ChangeNotifier {
       print('________________3________________$allUsersFormFirebase');
 
       return UserInformation(
-          email: userDoc['email'],
-          firstName: userDoc['firstName'],
-          lastName: userDoc['lastName'],
-          phone: userDoc['phone'],
-          userId: userDoc['userId']);
+        email: userDoc['email'],
+        firstName: userDoc['firstName'],
+        lastName: userDoc['lastName'],
+        phone: userDoc['phone'],
+        userId: userDoc['userId'],
+        isOnline: userDoc['isOnline'],
+        // imageUrl: userDoc['imagUrl'],
+      );
     }).toList();
 
     allUsersFormFirebase = users;
-
-    print(
-        '_______________4_________${allUsersFormFirebase.length}_______$allUsersFormFirebase');
   }
 
+// -----------------image picker----------------------
 
-  File? imageProfile;
+  File? pickedImageProfile;
   Future<void> pickImageProfile(ImageSource source) async {
     final pick = ImagePicker();
-    final pickedFile = await pick.pickImage(source: source);
+    final pickedFile = await pick.pickImage(source: source, imageQuality: 80);
     if (pickedFile != null) {
-      imageProfile = File(pickedFile.path);
-      print('_______provider____picker');
-      print('_______P____picker$imageProfile');
+      pickedImageProfile = File(pickedFile.path);
 
       notifyListeners();
     }
+  }
+
+  String? imageUrlFromFirbase;
+  Future saveImagePickerInFirebase() async {
+    final user = FirebaseAuth.instance.currentUser!.uid;
+    final Reference storgeRef =
+        FirebaseStorage.instance.ref().child('user_images').child('$user.jpg');
+
+    await storgeRef.putFile(pickedImageProfile!);
+    imageUrlFromFirbase = await storgeRef.getDownloadURL();
+
+    notifyListeners();
   }
 }

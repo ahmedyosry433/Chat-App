@@ -1,5 +1,6 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, use_build_context_synchronously
 
+import 'package:chat_app/core/constants/const.dart';
 import 'package:chat_app/core/theme/app-colors/app-colors-light.dart';
 import 'package:chat_app/provider/auth-provider.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ class AppbarMainChat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final subAuthProvider = Provider.of<AuthProvider>(context);
-    final imagefrompicker = Provider.of<AuthProvider>(context).imageProfile;
+
     return Container(
       height: 100,
       decoration: const BoxDecoration(
@@ -64,23 +65,24 @@ class AppbarMainChat extends StatelessWidget {
                     width: 50,
                     height: 50,
                     child: CircleAvatar(
-                      radius: 50,
-                      foregroundImage: imagefrompicker == null
-                          ? const NetworkImage(
-                              'https://upload.wikimedia.org/wikipedia/commons/9/9a/No_avatar.png')
-                          : null,
-                      backgroundImage: imagefrompicker != null
-                          ? FileImage(imagefrompicker)
-                          : null,
-                    ),
+                        radius: 50,
+                        foregroundImage: NetworkImage(
+                            '${subAuthProvider.userAlreadyexist['imageUrl']}')),
                   ),
                 ),
                 Text('${subAuthProvider.userAlreadyexist['firstName']}'),
                 const SizedBox(height: 5),
                 GestureDetector(
-                    onTap: () {
-                      Provider.of<AuthProvider>(context, listen: false)
-                          .logOut();
+                    onTap: () async {
+                      try {
+                        await Provider.of<AuthProvider>(context, listen: false)
+                            .logOut();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('LogOut sucsess')));
+                      } catch (e) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(SnackBar(content: Text('$e')));
+                      }
                     },
                     child: Text('Logout',
                         style: Theme.of(context).textTheme.titleSmall)),

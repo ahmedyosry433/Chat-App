@@ -50,9 +50,9 @@ class AppbarChat extends StatelessWidget {
                     style: const TextStyle(
                         fontSize: 17, fontWeight: FontWeight.bold),
                   ),
-                  const Text(
-                    'Last Seen',
-                    style: TextStyle(fontSize: 12),
+                  Text(
+                    userinfor.isOnline ? 'online' : 'last seen',
+                    style: const TextStyle(fontSize: 12),
                   ),
                 ],
               ),

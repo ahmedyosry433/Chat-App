@@ -1,7 +1,9 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, unnecessary_null_comparison
 
 import 'package:chat_app/core/theme/app-colors/app-colors-light.dart';
+import 'package:chat_app/provider/message-provider.dart';
 import 'package:chat_app/screens/chat/components/appbar-chat-main.dart';
+import 'package:chat_app/widgets/online-image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -29,13 +31,25 @@ class _ChatMainState extends State<ChatMain> {
     if (!isLoading) {
       context.read<AuthProvider>().getUserByUid(user!.uid);
       context.read<AuthProvider>().getUsersFromFirestore();
+
       isLoading = true;
     }
+  }
+
+  String createChatId({required String userId}) {
+    final currentUser = FirebaseAuth.instance.currentUser!.uid;
+    final userReceiving = userId;
+    List<String> sortedUserIds = [currentUser, userReceiving]..sort();
+    return sortedUserIds.join('_');
   }
 
   @override
   Widget build(BuildContext context) {
     final subAuthProvider = Provider.of<AuthProvider>(context);
+    final subsubAuthProvider =
+        Provider.of<AuthProvider>(context, listen: false);
+
+    final subMessageProvider = Provider.of<MessageProvider>(context);
     return SafeArea(
         child: Scaffold(
       body: !isLoading
@@ -45,45 +59,61 @@ class _ChatMainState extends State<ChatMain> {
           : Column(
               children: [
                 const AppbarMainChat(),
-                SizedBox(
-                  height: 100,
-                  child: Expanded(
-                    child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount:
-                            subAuthProvider.filterUsers(user!.uid).length,
-                        itemBuilder: ((context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 50,
-                                  width: 50,
-                                  child: CircleAvatar(),
-                                ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                        '${subAuthProvider.allUsersFormFirebase[index].firstName} ',
-                                        style: const TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w600)),
-                                    Text(
-                                        ' ${subAuthProvider.allUsersFormFirebase[index].lastName}',
-                                        style: const TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w600)),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        })),
-                  ),
-                ),
+                subAuthProvider.filterUsersOnline().isEmpty
+                    ? const Text('No Active Users')
+                    : SizedBox(
+                        height: 100,
+                        child: Expanded(
+                          child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount:
+                                  subsubAuthProvider.filterUsersOnline().length,
+                              itemBuilder: ((context, index) {
+                                final allUsers =
+                                    subAuthProvider.filterAllUsersOnline[index];
+                                return GestureDetector(
+                                  onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ChatDetails(
+                                                user: allUsers,
+                                              ))),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 50,
+                                          width: 50,
+                                          child: OnlineImage(),
+                                        ),
+                                        Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Text('${allUsers.firstName} ',
+                                                style: const TextStyle(
+                                                    fontSize: 13,
+                                                    fontWeight:
+                                                        FontWeight.w600)),
+                                            Text(
+                                              ' ${allUsers.lastName}',
+                                              style: const TextStyle(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              })),
+                        ),
+                      ),
                 const Divider(
                   color: AppColorLight.sceondColor,
                 ),
@@ -91,13 +121,14 @@ class _ChatMainState extends State<ChatMain> {
                   child: ListView.builder(
                       itemCount: subAuthProvider.filterUsers(user!.uid).length,
                       itemBuilder: ((context, index) {
+                        final allUsers =
+                            subAuthProvider.filterAllUsersFormFirebase[index];
                         return GestureDetector(
                           onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => ChatDetails(
-                                        user: subAuthProvider
-                                            .allUsersFormFirebase[index],
+                                        user: allUsers,
                                       ))),
                           child: SizedBox(
                             child: Padding(
@@ -118,13 +149,13 @@ class _ChatMainState extends State<ChatMain> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                              '${subAuthProvider.allUsersFormFirebase[index].firstName} ${subAuthProvider.allUsersFormFirebase[index].lastName}',
+                                              '${allUsers.firstName} ${allUsers.lastName}',
                                               style: const TextStyle(
                                                   fontSize: 15,
                                                   fontWeight: FontWeight.w700)),
-                                          const Text(
-                                            'Last Message',
-                                            style: TextStyle(
+                                          Text(
+                                            '${subMessageProvider.getLastMessage(createChatId: createChatId(userId: allUsers.userId))}${subMessageProvider.lastMessage}',
+                                            style: const TextStyle(
                                                 fontSize: 11,
                                                 color: Colors.grey),
                                           ),

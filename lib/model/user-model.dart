@@ -9,21 +9,28 @@ class UserInformation {
   String lastName;
   String phone;
   String email;
+  bool isOnline;
+  // String imageUrl;
 
-  UserInformation(
-      {required this.userId,
-      required this.firstName,
-      required this.lastName,
-      required this.phone,
-      required this.email});
+  UserInformation({
+    required this.userId,
+    required this.firstName,
+    required this.lastName,
+    required this.phone,
+    required this.email,
+    required this.isOnline,
+    // required this.imageUrl,
+  });
 
-  factory UserInformation.fromJson(Map<String,dynamic> data) {
+  factory UserInformation.fromJson(Map<String, dynamic> data) {
     return UserInformation(
       firstName: data['firstname'],
       lastName: data['lastname'],
       phone: data['phone'],
       userId: data['userId'],
       email: data['email'],
+      isOnline: data['isOnline'],
+      // imageUrl: data['imagUrl'],
     );
   }
   // User? user = FirebaseAuth.instance.currentUser;

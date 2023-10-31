@@ -18,7 +18,8 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imagefrompicker = Provider.of<AuthProvider>(context).imageProfile;
+    final imageFromFirebase =
+        Provider.of<AuthProvider>(context).imageUrlFromFirbase;
     return SafeArea(
         child: Scaffold(
       body: SingleChildScrollView(
@@ -38,12 +39,12 @@ class Profile extends StatelessWidget {
                 Stack(children: [
                   CircleAvatar(
                     radius: 50,
-                    foregroundImage: imagefrompicker == null
+                    foregroundImage: imageFromFirebase == null
                         ? const NetworkImage(
                             'https://upload.wikimedia.org/wikipedia/commons/9/9a/No_avatar.png')
-                        : null,
-                    backgroundImage: imagefrompicker != null
-                        ? FileImage(imagefrompicker)
+                        : NetworkImage(imageFromFirebase),
+                    backgroundImage: imageFromFirebase != null
+                        ? NetworkImage(imageFromFirebase)
                         : null,
                   ),
                   Positioned(

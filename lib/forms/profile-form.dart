@@ -139,6 +139,7 @@ class ProfileForm extends StatelessWidget {
                     lastName: _lastNameController.text.trim(),
                     phone: _phoneController.text.trim(),
                   );
+
                   ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Updated Successfully ')));
                   Navigator.popAndPushNamed(context, '/chatmain');
