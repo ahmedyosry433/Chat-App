@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'auth/login-screen.dart';
-import 'chat/main-chat-screen.dart';
+import '../screens/auth/login-screen.dart';
+import '../screens/chat/chat-main/main-chat-screen.dart';
 
 class Splash extends StatefulWidget {
   const Splash({super.key});

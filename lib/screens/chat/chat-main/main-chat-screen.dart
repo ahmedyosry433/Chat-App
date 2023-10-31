@@ -2,14 +2,14 @@
 
 import 'package:chat_app/core/theme/app-colors/app-colors-light.dart';
 import 'package:chat_app/provider/message-provider.dart';
-import 'package:chat_app/screens/chat/components/appbar-chat-main.dart';
+import 'package:chat_app/screens/chat/chat-main/components/appbar-chat-main.dart';
 import 'package:chat_app/widgets/online-image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../provider/auth-provider.dart';
-import 'chat-screen.dart';
+import '../../../provider/auth-provider.dart';
+import '../chat-details/chat-screen.dart';
 
 class ChatMain extends StatefulWidget {
   const ChatMain({super.key});
@@ -19,7 +19,6 @@ class ChatMain extends StatefulWidget {
 }
 
 class _ChatMainState extends State<ChatMain> {
-  bool isLoading = false;
   final user = FirebaseAuth.instance.currentUser;
   @override
   void initState() {
@@ -28,11 +27,8 @@ class _ChatMainState extends State<ChatMain> {
   }
 
   getUsersFromFirestore() {
-    if (!isLoading) {
-      context.read<AuthProvider>().getUserByUid(user!.uid);
-      context.read<AuthProvider>().getUsersFromFirestore();
-      isLoading = true;
-    }
+    context.read<AuthProvider>().getUserByUid(user!.uid);
+    context.read<AuthProvider>().getUsersFromFirestore();
   }
 
   String createChatId({required String userId}) {
@@ -49,9 +45,10 @@ class _ChatMainState extends State<ChatMain> {
         Provider.of<AuthProvider>(context, listen: false);
 
     final subMessageProvider = Provider.of<MessageProvider>(context);
+
     return SafeArea(
         child: Scaffold(
-      body: !isLoading
+      body: !subAuthProvider.isLoad
           ? const Center(
               child: CircularProgressIndicator(),
             )
@@ -156,7 +153,7 @@ class _ChatMainState extends State<ChatMain> {
                                                   fontSize: 15,
                                                   fontWeight: FontWeight.w700)),
                                           Text(
-                                            allUsers.lastMessage,
+                                             Provider.of<AuthProvider>(context,listen: false).filterAllUsersFormFirebase[index].lastMessage,
                                             style: const TextStyle(
                                                 fontSize: 11,
                                                 color: Colors.grey),

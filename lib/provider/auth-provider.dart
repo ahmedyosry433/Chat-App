@@ -63,6 +63,15 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future setIsImage({required bool isOnline}) async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    await FirebaseFirestore.instance.collection('user').doc(user!.uid).update({
+      'isOnline': isOnline,
+    });
+    notifyListeners();
+  }
+
   bool visibility = true;
   visibilityPassword() {
     visibility = !visibility;
@@ -137,31 +146,36 @@ class AuthProvider with ChangeNotifier {
   }
 
   List<UserInformation> allUsersFormFirebase = [];
-
+  bool isLoad = false;
   Future<void> getUsersFromFirestore() async {
-    QuerySnapshot userSnapshots =
-        await FirebaseFirestore.instance.collection('user').get();
-    List<UserInformation> users = [];
-    final currntUser = FirebaseAuth.instance.currentUser!;
-    for (var userDoc in userSnapshots.docs) {
-      List<String> sortedUserIds = [currntUser.uid, userDoc['userId']]..sort();
-      String? lastMessage =
-          await getLastMessage(createChatId: sortedUserIds.join('_'));
-      users.add(UserInformation(
-          email: userDoc['email'],
-          firstName: userDoc['firstName'],
-          lastName: userDoc['lastName'],
-          phone: userDoc['phone'],
-          userId: userDoc['userId'],
-          isOnline: userDoc['isOnline'],
-          lastMessage: lastMessage ?? ''
-          //
-          // imageUrl: userDoc['imagUrl'],
-          ));
+    if (!isLoad) {
+      QuerySnapshot userSnapshots =
+          await FirebaseFirestore.instance.collection('user').get();
+      List<UserInformation> users = [];
+      final currntUser = FirebaseAuth.instance.currentUser!;
+      for (var userDoc in userSnapshots.docs) {
+        List<String> sortedUserIds = [currntUser.uid, userDoc['userId']]
+          ..sort();
+
+        String? lastMessage =
+            await getLastMessage(createChatId: sortedUserIds.join('_'));
+        users.add(UserInformation(
+            email: userDoc['email'],
+            firstName: userDoc['firstName'],
+            lastName: userDoc['lastName'],
+            phone: userDoc['phone'],
+            userId: userDoc['userId'],
+            isOnline: userDoc['isOnline'],
+            lastMessage: lastMessage ?? ''
+            //
+            // imageUrl: userDoc['imagUrl'],
+            ));
+      }
+      allUsersFormFirebase = users;
+      filterUsers(currntUser.uid);
+      filterUsersOnline();
     }
-    allUsersFormFirebase = users;
-    filterUsers(currntUser.uid);
-    filterUsersOnline();
+    isLoad = true;
     //stop loading
     notifyListeners();
   }

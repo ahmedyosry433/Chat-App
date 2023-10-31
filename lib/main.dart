@@ -2,14 +2,14 @@ import 'package:chat_app/core/theme/theme-data/theme-data-light.dart';
 import 'package:chat_app/provider/auth-provider.dart';
 import 'package:chat_app/provider/message-provider.dart';
 import 'package:chat_app/screens/auth/profile-screen.dart';
-import 'package:chat_app/screens/splash.dart';
+import 'package:chat_app/widgets/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'screens/auth/login-screen.dart';
 import 'screens/auth/signup-screen.dart';
 import 'firebase_options.dart';
-import 'screens/chat/main-chat-screen.dart';
+import 'screens/chat/chat-main/main-chat-screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
