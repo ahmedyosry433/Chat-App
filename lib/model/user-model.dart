@@ -28,14 +28,15 @@ class UserInformation {
 
   factory UserInformation.fromJson(Map<String, dynamic> data) {
     return UserInformation(
-        firstName: data['firstname'],
-        lastName: data['lastname'],
-        phone: data['phone'],
-        userId: data['userId'],
-        email: data['email'],
-        isOnline: data['isOnline'],
-        lastMessage: data['lastMessage'],
-        imageUrl: data['imageUrl'],
-        lastMessageTime: data['lastMessageTime']);
+      firstName: data['firstname'],
+      lastName: data['lastname'],
+      phone: data['phone'],
+      userId: data['userId'],
+      email: data['email'],
+      imageUrl: data['imageUrl'],
+      isOnline: data['isOnline'],
+      lastMessage: data['lastMessage'],
+      lastMessageTime: data['lastMessageTime'],
+    );
   }
 }

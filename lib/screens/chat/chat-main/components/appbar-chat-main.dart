@@ -77,6 +77,7 @@ class AppbarMainChat extends StatelessWidget {
                       try {
                         await Provider.of<AuthProvider>(context, listen: false)
                             .logOut();
+                        Navigator.pushNamed(context, '/splash');
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('LogOut sucsess')));
                       } catch (e) {
