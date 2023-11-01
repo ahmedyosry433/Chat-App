@@ -20,6 +20,7 @@ class ChatMain extends StatefulWidget {
 
 class _ChatMainState extends State<ChatMain> {
   final user = FirebaseAuth.instance.currentUser;
+
   @override
   void initState() {
     getUsersFromFirestore();
@@ -78,10 +79,12 @@ class _ChatMainState extends State<ChatMain> {
                                     padding: const EdgeInsets.all(8.0),
                                     child: Column(
                                       children: [
-                                        const SizedBox(
+                                        SizedBox(
                                           height: 50,
                                           width: 50,
-                                          child: OnlineImage(),
+                                          child: OnlineImage(
+                                            index: index,
+                                          ),
                                         ),
                                         Column(
                                           mainAxisAlignment:
@@ -138,10 +141,13 @@ class _ChatMainState extends State<ChatMain> {
                                 children: [
                                   Row(
                                     children: [
-                                      const SizedBox(
+                                      SizedBox(
                                           height: 50,
                                           width: 50,
-                                          child: CircleAvatar()),
+                                          child: CircleAvatar(
+                                            foregroundImage:
+                                                NetworkImage(allUsers.imageUrl),
+                                          )),
                                       const SizedBox(width: 10),
                                       Column(
                                         crossAxisAlignment:

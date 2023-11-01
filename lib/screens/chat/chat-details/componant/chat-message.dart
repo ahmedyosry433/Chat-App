@@ -16,7 +16,7 @@ class ChatMessage extends StatefulWidget {
 }
 
 class _ChatMessageState extends State<ChatMessage> {
-  final user = FirebaseAuth.instance.currentUser;
+  final currentUser = FirebaseAuth.instance.currentUser;
 
   late User signInUser;
 
@@ -28,8 +28,8 @@ class _ChatMessageState extends State<ChatMessage> {
 
   getCurrentUser() {
     try {
-      if (user != null) {
-        signInUser = user!;
+      if (currentUser != null) {
+        signInUser = currentUser!;
       }
     } catch (e) {
       print(
@@ -65,6 +65,7 @@ class _ChatMessageState extends State<ChatMessage> {
           return const Center(child: Text('Something Went Wrong.'));
         }
         final loadedMessage = snapshot.data!.docs;
+
         return ListView.builder(
           reverse: true,
           itemCount: loadedMessage.length,
@@ -84,8 +85,7 @@ class _ChatMessageState extends State<ChatMessage> {
                           child: Text(
                             isMe
                                 ? 'You'
-                                : loadedMessage[index].data()['firstName'] +
-                                    loadedMessage[index].data()['lastName'],
+                                : '${loadedMessage[index].data()['firstName']} ${loadedMessage[index].data()['lastName']}',
                             style: const TextStyle(
                                 fontSize: 10, color: Colors.black38),
                           ),

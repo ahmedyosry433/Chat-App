@@ -35,9 +35,7 @@ class AppbarChat extends StatelessWidget {
                 width: 60,
                 height: 60,
                 child: CircleAvatar(
-                  child: Image.asset(
-                    'assets/image/avatar.png',
-                  ),
+                  foregroundImage: NetworkImage(userinfor.imageUrl),
                 ),
               ),
               const SizedBox(width: 5),
