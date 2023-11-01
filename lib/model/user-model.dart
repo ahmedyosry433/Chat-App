@@ -10,8 +10,9 @@ class UserInformation {
   String phone;
   String email;
   bool isOnline;
-  String lastMessage ;
-  // String imageUrl;
+  String lastMessage;
+  String imageUrl;
+  Timestamp lastMessageTime;
 
   UserInformation({
     required this.userId,
@@ -20,31 +21,21 @@ class UserInformation {
     required this.phone,
     required this.email,
     required this.isOnline,
-    required this.lastMessage
-
-    // required this.imageUrl,
+    required this.lastMessage,
+    required this.imageUrl,
+    required this.lastMessageTime,
   });
 
   factory UserInformation.fromJson(Map<String, dynamic> data) {
     return UserInformation(
-      firstName: data['firstname'],
-      lastName: data['lastname'],
-      phone: data['phone'],
-      userId: data['userId'],
-      email: data['email'],
-      isOnline: data['isOnline'],
-      lastMessage: data['lastMessage'],
-      // imageUrl: data['imagUrl'],
-    );
+        firstName: data['firstname'],
+        lastName: data['lastname'],
+        phone: data['phone'],
+        userId: data['userId'],
+        email: data['email'],
+        isOnline: data['isOnline'],
+        lastMessage: data['lastMessage'],
+        imageUrl: data['imageUrl'],
+        lastMessageTime: data['lastMessageTime']);
   }
-  // User? user = FirebaseAuth.instance.currentUser;
-  //  Map<String, dynamic> toJson() {
-  //   return {
-  //     'userId': userId,
-  //     'firstName': firstName,
-  //     'lastName': lastName,
-  //     'phone': phone,
-  //     'email': user!.email,
-  //   };
-  // }
 }

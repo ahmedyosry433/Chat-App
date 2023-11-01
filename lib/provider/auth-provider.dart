@@ -2,13 +2,12 @@
 
 import 'dart:io';
 
-import 'package:chat_app/core/constants/const.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
+import '../core/constants/const.dart';
 import '../model/user-model.dart';
 
 class AuthProvider with ChangeNotifier {
@@ -63,11 +62,10 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future setIsImage({required bool isOnline}) async {
+  Future setIsImage() async {
     User? user = FirebaseAuth.instance.currentUser;
-
     await FirebaseFirestore.instance.collection('user').doc(user!.uid).update({
-      'isOnline': isOnline,
+      'imageUrl': imageUrlFromFirbase,
     });
     notifyListeners();
   }
@@ -157,19 +155,21 @@ class AuthProvider with ChangeNotifier {
         List<String> sortedUserIds = [currntUser.uid, userDoc['userId']]
           ..sort();
 
-        String? lastMessage =
+        final lastMessage =
             await getLastMessage(createChatId: sortedUserIds.join('_'));
+
         users.add(UserInformation(
-            email: userDoc['email'],
-            firstName: userDoc['firstName'],
-            lastName: userDoc['lastName'],
-            phone: userDoc['phone'],
-            userId: userDoc['userId'],
-            isOnline: userDoc['isOnline'],
-            lastMessage: lastMessage ?? ''
-            //
-            // imageUrl: userDoc['imagUrl'],
-            ));
+          email: userDoc['email'],
+          firstName: userDoc['firstName'],
+          lastName: userDoc['lastName'],
+          phone: userDoc['phone'],
+          userId: userDoc['userId'],
+          isOnline: userDoc['isOnline'],
+          lastMessage: lastMessage!['text'] ?? '',
+          lastMessageTime: lastMessage['createdAt'] ?? '',
+
+          imageUrl: userDoc['imageUrl'],
+        ));
       }
       allUsersFormFirebase = users;
       filterUsers(currntUser.uid);
@@ -184,27 +184,38 @@ class AuthProvider with ChangeNotifier {
 
   File? pickedImageProfile;
   Future<void> pickImageProfile(ImageSource source) async {
-    final pick = ImagePicker();
-    final pickedFile = await pick.pickImage(source: source, imageQuality: 80);
-    if (pickedFile != null) {
-      pickedImageProfile = File(pickedFile.path);
-
-      notifyListeners();
+    isLoad = false;
+    if (!isLoad) {
+      final pick = ImagePicker();
+      final pickedFile = await pick.pickImage(source: source, imageQuality: 80);
+      if (pickedFile != null) {
+        pickedImageProfile = File(pickedFile.path);
+        await saveImagePickerInFirebase();
+      }
     }
+    isLoad = true;
+
+    notifyListeners();
   }
 
   String? imageUrlFromFirbase;
   Future saveImagePickerInFirebase() async {
+    // isLoad = false;
+
     final user = FirebaseAuth.instance.currentUser!.uid;
     final Reference storgeRef =
         FirebaseStorage.instance.ref().child('user_images').child('$user.jpg');
 
     await storgeRef.putFile(pickedImageProfile!);
     imageUrlFromFirbase = await storgeRef.getDownloadURL();
+    setIsImage();
+    getUsersFromFirestore();
     notifyListeners();
   }
 
-  Future<String?> getLastMessage({required String createChatId}) async {
+// --------------------- message-----------------------------------------
+  Future<DocumentSnapshot?> getLastMessage(
+      {required String createChatId}) async {
     final firestore = FirebaseFirestore.instance;
     final query = firestore
         .collection('chat')
@@ -215,7 +226,9 @@ class AuthProvider with ChangeNotifier {
 
     final querySnapshot = await query.get();
     if (querySnapshot.docs.isNotEmpty) {
-      return await querySnapshot.docs[0]['text'];
+      getUsersFromFirestore();
+
+      return querySnapshot.docs[0];
     }
     return null;
   }

@@ -153,7 +153,11 @@ class _ChatMainState extends State<ChatMain> {
                                                   fontSize: 15,
                                                   fontWeight: FontWeight.w700)),
                                           Text(
-                                             Provider.of<AuthProvider>(context,listen: false).filterAllUsersFormFirebase[index].lastMessage,
+                                            Provider.of<AuthProvider>(context,
+                                                    listen: false)
+                                                .filterAllUsersFormFirebase[
+                                                    index]
+                                                .lastMessage,
                                             style: const TextStyle(
                                                 fontSize: 11,
                                                 color: Colors.grey),
@@ -162,7 +166,8 @@ class _ChatMainState extends State<ChatMain> {
                                       ),
                                     ],
                                   ),
-                                  const Text('10:25 am'),
+                                  Text(subMessageProvider.convertDataTime(
+                                      allUsers.lastMessageTime)),
                                 ],
                               ),
                             ),

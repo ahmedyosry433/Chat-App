@@ -18,8 +18,9 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final subAuthProvider = Provider.of<AuthProvider>(context);
     final imageFromFirebase =
-        Provider.of<AuthProvider>(context).imageUrlFromFirbase;
+        Provider.of<AuthProvider>(context).pickedImageProfile;
     return SafeArea(
         child: Scaffold(
       body: SingleChildScrollView(
@@ -40,11 +41,14 @@ class Profile extends StatelessWidget {
                   CircleAvatar(
                     radius: 50,
                     foregroundImage: imageFromFirebase == null
-                        ? const NetworkImage(
-                            'https://upload.wikimedia.org/wikipedia/commons/9/9a/No_avatar.png')
-                        : NetworkImage(imageFromFirebase),
+                        ? subAuthProvider.userAlreadyexist['imageUrl'] == null
+                            ? const NetworkImage(
+                                'https://upload.wikimedia.org/wikipedia/commons/9/9a/No_avatar.png')
+                            : NetworkImage(
+                                subAuthProvider.userAlreadyexist['imageUrl'])
+                        : null,
                     backgroundImage: imageFromFirebase != null
-                        ? NetworkImage(imageFromFirebase)
+                        ? FileImage(imageFromFirebase)
                         : null,
                   ),
                   Positioned(
@@ -56,7 +60,9 @@ class Profile extends StatelessWidget {
                                   listen: false)
                               .pickImageProfile(ImageSource.gallery);
                         },
-                        child: const Icon(Icons.add_a_photo),
+                        child: !subAuthProvider.isLoad
+                            ? const CircularProgressIndicator()
+                            : const Icon(Icons.add_a_photo_sharp),
                       ))
                 ]),
                 const SizedBox(height: 50),

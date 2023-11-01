@@ -64,9 +64,10 @@ class AppbarMainChat extends StatelessWidget {
                     width: 50,
                     height: 50,
                     child: CircleAvatar(
-                        radius: 50,
-                        foregroundImage: NetworkImage(
-                            '${subAuthProvider.userAlreadyexist['imageUrl']}')),
+                      radius: 50,
+                      foregroundImage: NetworkImage(
+                          '${subAuthProvider.userAlreadyexist['imageUrl']}'),
+                    ),
                   ),
                 ),
                 Text('${subAuthProvider.userAlreadyexist['firstName']}'),
