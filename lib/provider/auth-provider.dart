@@ -7,7 +7,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '../core/constants/const.dart';
 import '../model/user-model.dart';
 
 class AuthProvider with ChangeNotifier {
@@ -91,8 +90,8 @@ class AuthProvider with ChangeNotifier {
       'lastName': lastName,
       'phone': phone,
       'email': user.email,
-      'isOnline': false,
-      'imageUrl': Constants.defualtImageUrl,
+      'isOnline': true,
+      'imageUrl': imageUrlFromFirbase ?? userAlreadyexist['imageUrl'],
     });
     notifyListeners();
   }
@@ -167,7 +166,6 @@ class AuthProvider with ChangeNotifier {
           isOnline: userDoc['isOnline'],
           lastMessage: lastMessage!['text'] ?? '',
           lastMessageTime: lastMessage['createdAt'] ?? '',
-
           imageUrl: userDoc['imageUrl'],
         ));
       }
