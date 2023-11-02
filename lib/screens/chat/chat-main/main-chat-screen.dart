@@ -1,9 +1,10 @@
-// ignore_for_file: file_names, unnecessary_null_comparison
+// ignore_for_file: file_names, unnecessary_null_comparison, avoid_print
 
 import 'package:chat_app/core/theme/app-colors/app-colors-light.dart';
 import 'package:chat_app/screens/chat/chat-main/components/appbar-chat-main.dart';
 import 'package:chat_app/widgets/online-image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -23,7 +24,13 @@ class _ChatMainState extends State<ChatMain> {
   @override
   void initState() {
     getUsersFromFirestore();
+    getToken();
     super.initState();
+  }
+
+  getToken() async {
+    String? myToken = await FirebaseMessaging.instance.getToken();
+    print('________________________$myToken');
   }
 
   getUsersFromFirestore() {
@@ -39,6 +46,13 @@ class _ChatMainState extends State<ChatMain> {
 
     return SafeArea(
         child: Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: const Icon(
+          Icons.chat_bubble_outlined,
+          size: 30,
+        ),
+      ),
       body: !subAuthProvider.isLoad
           ? const Center(
               child: CircularProgressIndicator(),

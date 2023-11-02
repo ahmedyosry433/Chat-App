@@ -84,7 +84,7 @@ class AuthProvider with ChangeNotifier {
     required String phone,
   }) async {
     User? user = FirebaseAuth.instance.currentUser;
-
+    // final myToken = await FirebaseMessaging.instance.getToken();
     await FirebaseFirestore.instance.collection('user').doc(user!.uid).set({
       'userId': user.uid,
       'firstName': firstName,
@@ -95,6 +95,7 @@ class AuthProvider with ChangeNotifier {
       'imageUrl': imageUrlFromFirbase ??
           userAlreadyexist['imageUrl'] ??
           Constants.defualtImageUrl,
+      // 'myToken': myToken,
     });
     await getUsersFromFirestore();
     notifyListeners();
@@ -169,6 +170,8 @@ class AuthProvider with ChangeNotifier {
           userId: userDoc['userId'],
           isOnline: userDoc['isOnline'],
           imageUrl: userDoc['imageUrl'],
+          // myToken: userDoc['myToken'],
+
           //-------issue : return null - if user create account--------------
           // lastMessage: lastMessage!['text'] ?? '',
           // lastMessageTime: lastMessage['createdAt'] ?? '',

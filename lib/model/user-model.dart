@@ -10,8 +10,9 @@ class UserInformation {
   String phone;
   String email;
   bool isOnline;
-  // String lastMessage;
   String imageUrl;
+  // String myToken;
+  // String lastMessage;
   // Timestamp lastMessageTime;
 
   UserInformation({
@@ -21,8 +22,9 @@ class UserInformation {
     required this.phone,
     required this.email,
     required this.isOnline,
-    // required this.lastMessage,
     required this.imageUrl,
+    // required this.myToken,
+    // required this.lastMessage,
     // required this.lastMessageTime,
   });
 
@@ -35,6 +37,7 @@ class UserInformation {
       email: data['email'],
       imageUrl: data['imageUrl'],
       isOnline: data['isOnline'],
+      // myToken: data['myToken'],
       // lastMessage: data['lastMessage'],
       // lastMessageTime: data['lastMessageTime'],
     );

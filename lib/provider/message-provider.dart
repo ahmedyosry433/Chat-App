@@ -1,9 +1,12 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, avoid_print
+
+import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class MessageProvider with ChangeNotifier {
   sentMessage(
@@ -29,37 +32,53 @@ class MessageProvider with ChangeNotifier {
       'userId': user.uid,
       'firstName': userData.data()!['firstName'],
       'lastName': userData.data()!['lastName'],
+      'token': userData.data()!['token']
     });
-
+    sentNatification(
+        senderName:
+            '${userData.data()!['firstName']} ${userData.data()!['lastName']}',
+        message: entryMessage,
+        token: userData.data()!['myToken']);
     entryMessageController.clear();
     notifyListeners();
-  }
-
-  dynamic userMessagExist;
-  Future<Map<String, dynamic>> getUserMessageByUid(
-      {required String userUid}) async {
-    try {
-      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userUid)
-          .get();
-
-      if (userSnapshot.exists) {
-        userMessagExist = userSnapshot.data() as Map<String, dynamic>;
-      } else {
-        userMessagExist = {};
-      }
-    } catch (e) {
-      userMessagExist = {};
-    }
-    notifyListeners();
-    return {};
   }
 
   String convertDataTime(Timestamp timeStamp) {
     var format = DateFormat('hh:mm a').format(timeStamp.toDate());
     notifyListeners();
     return format;
+  }
+
+  sentNatification(
+      {required String senderName,
+      required String message,
+      required String token}) async {
+    var headersList = {
+      'Accept': '*/*',
+      'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
+      'Content-Type': 'application/json',
+      'Authorization':
+          'key=AAAAVXga5do:APA91bHMv8cvMwlyr3bTZK-kc_oeFTppY5YBXNO9nVQ08IfsDhb9cGsWglb5jxaQUdP0ILUowmv5ZCaEmqVFz_ocZlgVh-7hm7g9bmfS2GObbjGdTTvpGLMAvqXEOZviWdr5yVG5UsT_'
+    };
+    var url = Uri.parse('https://fcm.googleapis.com/fcm/send');
+
+    var body = {
+      "to": token,
+      "notification": {"title": senderName, "body": message}
+    };
+
+    var req = http.Request('POST', url);
+    req.headers.addAll(headersList);
+    req.body = json.encode(body);
+
+    var res = await req.send();
+    final resBody = await res.stream.bytesToString();
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      print('___body___$resBody');
+    } else {
+      print(res.reasonPhrase);
+    }
   }
 
   // String? lastMessage;
@@ -74,7 +93,7 @@ class MessageProvider with ChangeNotifier {
 
   //   final querySnapshot = await query.get();
   //   if (querySnapshot.docs.isNotEmpty) {
-      
+
   //     return await querySnapshot.docs[0]['text'];
   //   }
 
