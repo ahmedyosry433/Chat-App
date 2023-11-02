@@ -10,18 +10,19 @@ import '../provider/auth-provider.dart';
 
 // ignore: must_be_immutable
 class ProfileForm extends StatelessWidget {
-  ProfileForm({super.key});
-
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-
-  final TextEditingController _phoneController = TextEditingController();
+  ProfileForm({super.key,required this.firstNameValue,required this.lastNameValue ,required this.phoneNameValue});
+  String firstNameValue;
+  String lastNameValue;
+  String phoneNameValue;
 
   GlobalKey<FormState> formKey = GlobalKey();
-
   @override
   Widget build(BuildContext context) {
+  final TextEditingController firstNameController =
+      TextEditingController(text: firstNameValue);
+  final TextEditingController lastNameController = TextEditingController(text:lastNameValue);
+
+  final TextEditingController phoneController = TextEditingController(text: phoneNameValue);
     final subAuthProvider = Provider.of<AuthProvider>(context, listen: false);
     return Form(
       key: formKey,
@@ -40,7 +41,7 @@ class ProfileForm extends StatelessWidget {
                 }
                 return null;
               },
-              controller: _firstNameController,
+              controller: firstNameController,
               keyboardType: TextInputType.name,
               decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.person),
@@ -69,7 +70,7 @@ class ProfileForm extends StatelessWidget {
                 }
                 return null;
               },
-              controller: _lastNameController,
+              controller: lastNameController,
               keyboardType: TextInputType.name,
               decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.person),
@@ -105,7 +106,7 @@ class ProfileForm extends StatelessWidget {
             width: 370,
             height: 50,
             child: TextFormField(
-              controller: _phoneController,
+              controller: phoneController,
               validator: (phone) {
                 if (phone == null || phone.isEmpty) {
                   return 'Please Enter Your Phone';
@@ -135,9 +136,9 @@ class ProfileForm extends StatelessWidget {
               try {
                 if (formKey.currentState!.validate()) {
                   await subAuthProvider.addUserInfoInFirebase(
-                    firstName: _firstNameController.text.trim(),
-                    lastName: _lastNameController.text.trim(),
-                    phone: _phoneController.text.trim(),
+                    firstName: firstNameController.text.trim(),
+                    lastName: lastNameController.text.trim(),
+                    phone: phoneController.text.trim(),
                   );
 
                   ScaffoldMessenger.of(context).showSnackBar(

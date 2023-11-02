@@ -168,11 +168,11 @@ class AuthProvider with ChangeNotifier {
           phone: userDoc['phone'],
           userId: userDoc['userId'],
           isOnline: userDoc['isOnline'],
+          imageUrl: userDoc['imageUrl'],
           //-------issue : return null - if user create account--------------
           // lastMessage: lastMessage!['text'] ?? '',
           // lastMessageTime: lastMessage['createdAt'] ?? '',
           // --------------------------------------------
-          imageUrl: userDoc['imageUrl'],
         ));
       }
       allUsersFormFirebase = users;
@@ -197,7 +197,7 @@ class AuthProvider with ChangeNotifier {
         pickedImageProfile = File(pickedFile.path);
       }
     }
-    saveImagePickerInFirebase();
+    await saveImagePickerInFirebase();
     isLoad = true;
     notifyListeners();
   }
@@ -212,7 +212,7 @@ class AuthProvider with ChangeNotifier {
 
     await storgeRef.putFile(pickedImageProfile!);
     imageUrlFromFirbase = await storgeRef.getDownloadURL();
-    setIsImage();
+    await setIsImage();
 
     notifyListeners();
   }

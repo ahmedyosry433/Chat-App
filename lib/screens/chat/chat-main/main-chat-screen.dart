@@ -1,7 +1,6 @@
 // ignore_for_file: file_names, unnecessary_null_comparison
 
 import 'package:chat_app/core/theme/app-colors/app-colors-light.dart';
-import 'package:chat_app/provider/message-provider.dart';
 import 'package:chat_app/screens/chat/chat-main/components/appbar-chat-main.dart';
 import 'package:chat_app/widgets/online-image.dart';
 import 'package:firebase_auth/firebase_auth.dart';

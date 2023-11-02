@@ -66,7 +66,11 @@ class Profile extends StatelessWidget {
                       ))
                 ]),
                 const SizedBox(height: 50),
-                ProfileForm(),
+                ProfileForm(
+                  firstNameValue: subAuthProvider.userAlreadyexist['firstName'],
+                  lastNameValue: subAuthProvider.userAlreadyexist['lastName'],
+                  phoneNameValue: subAuthProvider.userAlreadyexist['phone'],
+                ),
               ],
             ),
             Positioned(
