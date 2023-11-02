@@ -244,6 +244,7 @@ class SignupForm extends StatelessWidget {
                       firstName: _firstNameController.text,
                       lastName: _lastNameController.text,
                       phone: _phoneController.text);
+
                   ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Signup Successfully')));
 

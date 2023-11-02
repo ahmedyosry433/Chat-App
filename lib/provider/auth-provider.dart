@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:chat_app/core/constants/const.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -37,7 +38,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future logOut() async {
-    setIsOnilne(isOnline: false);
+    await setIsOnilne(isOnline: false);
     await FirebaseAuth.instance.signOut();
     notifyListeners();
   }
@@ -64,7 +65,7 @@ class AuthProvider with ChangeNotifier {
   Future setIsImage() async {
     User? user = FirebaseAuth.instance.currentUser;
     await FirebaseFirestore.instance.collection('user').doc(user!.uid).update({
-      'imageUrl': imageUrlFromFirbase,
+      'imageUrl': imageUrlFromFirbase ?? Constants.defualtImageUrl,
     });
     notifyListeners();
   }
@@ -91,8 +92,11 @@ class AuthProvider with ChangeNotifier {
       'phone': phone,
       'email': user.email,
       'isOnline': true,
-      'imageUrl': imageUrlFromFirbase ?? userAlreadyexist['imageUrl'],
+      'imageUrl': imageUrlFromFirbase ??
+          userAlreadyexist['imageUrl'] ??
+          Constants.defualtImageUrl,
     });
+    await getUsersFromFirestore();
     notifyListeners();
   }
 
@@ -151,11 +155,11 @@ class AuthProvider with ChangeNotifier {
       List<UserInformation> users = [];
       final currntUser = FirebaseAuth.instance.currentUser!;
       for (var userDoc in userSnapshots.docs) {
-        List<String> sortedUserIds = [currntUser.uid, userDoc['userId']]
-          ..sort();
+        // List<String> sortedUserIds = [currntUser.uid, userDoc['userId']]
+        //   ..sort();
 
-        final lastMessage =
-            await getLastMessage(createChatId: sortedUserIds.join('_'));
+        // final lastMessage =
+        // await getLastMessage(createChatId: sortedUserIds.join('_'));
 
         users.add(UserInformation(
           email: userDoc['email'],
@@ -164,14 +168,17 @@ class AuthProvider with ChangeNotifier {
           phone: userDoc['phone'],
           userId: userDoc['userId'],
           isOnline: userDoc['isOnline'],
-          lastMessage: lastMessage!['text'] ?? '',
-          lastMessageTime: lastMessage['createdAt'] ?? '',
+          //-------issue : return null - if user create account--------------
+          // lastMessage: lastMessage!['text'] ?? '',
+          // lastMessageTime: lastMessage['createdAt'] ?? '',
+          // --------------------------------------------
           imageUrl: userDoc['imageUrl'],
         ));
       }
       allUsersFormFirebase = users;
       filterUsers(currntUser.uid);
       filterUsersOnline();
+      // setIsImage();
     }
     isLoad = true;
     //stop loading
@@ -188,11 +195,10 @@ class AuthProvider with ChangeNotifier {
       final pickedFile = await pick.pickImage(source: source, imageQuality: 80);
       if (pickedFile != null) {
         pickedImageProfile = File(pickedFile.path);
-        await saveImagePickerInFirebase();
       }
     }
+    saveImagePickerInFirebase();
     isLoad = true;
-
     notifyListeners();
   }
 
@@ -207,7 +213,7 @@ class AuthProvider with ChangeNotifier {
     await storgeRef.putFile(pickedImageProfile!);
     imageUrlFromFirbase = await storgeRef.getDownloadURL();
     setIsImage();
-    getUsersFromFirestore();
+
     notifyListeners();
   }
 

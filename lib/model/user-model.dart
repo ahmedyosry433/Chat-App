@@ -10,9 +10,9 @@ class UserInformation {
   String phone;
   String email;
   bool isOnline;
-  String lastMessage;
+  // String lastMessage;
   String imageUrl;
-  Timestamp lastMessageTime;
+  // Timestamp lastMessageTime;
 
   UserInformation({
     required this.userId,
@@ -21,9 +21,9 @@ class UserInformation {
     required this.phone,
     required this.email,
     required this.isOnline,
-    required this.lastMessage,
+    // required this.lastMessage,
     required this.imageUrl,
-    required this.lastMessageTime,
+    // required this.lastMessageTime,
   });
 
   factory UserInformation.fromJson(Map<String, dynamic> data) {
@@ -35,8 +35,8 @@ class UserInformation {
       email: data['email'],
       imageUrl: data['imageUrl'],
       isOnline: data['isOnline'],
-      lastMessage: data['lastMessage'],
-      lastMessageTime: data['lastMessageTime'],
+      // lastMessage: data['lastMessage'],
+      // lastMessageTime: data['lastMessageTime'],
     );
   }
 }

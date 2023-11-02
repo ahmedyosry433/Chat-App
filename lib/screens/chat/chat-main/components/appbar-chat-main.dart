@@ -74,16 +74,40 @@ class AppbarMainChat extends StatelessWidget {
                 const SizedBox(height: 5),
                 GestureDetector(
                     onTap: () async {
-                      try {
-                        await Provider.of<AuthProvider>(context, listen: false)
-                            .logOut();
-                        Navigator.pushNamed(context, '/splash');
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('LogOut sucsess')));
-                      } catch (e) {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(SnackBar(content: Text('$e')));
-                      }
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text('Log out ?'),
+                              content: const Text('You Want to Logout ?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    try {
+                                      Provider.of<AuthProvider>(context,
+                                              listen: false)
+                                          .logOut();
+                                      Navigator.pushNamed(context, '/splash');
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text('LogOut sucsess')));
+                                    } catch (e) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                              SnackBar(content: Text('$e')));
+                                    }
+                                  },
+                                  child: const Text("Yes"),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text("Cansel"),
+                                ),
+                              ],
+                            );
+                          });
                     },
                     child: Text('Logout',
                         style: Theme.of(context).textTheme.titleSmall)),

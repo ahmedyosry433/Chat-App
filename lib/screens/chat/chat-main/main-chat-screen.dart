@@ -32,20 +32,11 @@ class _ChatMainState extends State<ChatMain> {
     context.read<AuthProvider>().getUsersFromFirestore();
   }
 
-  String createChatId({required String userId}) {
-    final currentUser = FirebaseAuth.instance.currentUser!.uid;
-    final userReceiving = userId;
-    List<String> sortedUserIds = [currentUser, userReceiving]..sort();
-    return sortedUserIds.join('_');
-  }
-
   @override
   Widget build(BuildContext context) {
     final subAuthProvider = Provider.of<AuthProvider>(context);
     final subsubAuthProvider =
         Provider.of<AuthProvider>(context, listen: false);
-
-    final subMessageProvider = Provider.of<MessageProvider>(context);
 
     return SafeArea(
         child: Scaffold(
@@ -122,9 +113,7 @@ class _ChatMainState extends State<ChatMain> {
                       itemBuilder: ((context, index) {
                         final allUsers =
                             subAuthProvider.filterAllUsersFormFirebase[index];
-                        subMessageProvider.getLastMessage(
-                            createChatId:
-                                createChatId(userId: allUsers.userId));
+
                         return GestureDetector(
                           onTap: () => Navigator.push(
                               context,
@@ -158,13 +147,9 @@ class _ChatMainState extends State<ChatMain> {
                                               style: const TextStyle(
                                                   fontSize: 15,
                                                   fontWeight: FontWeight.w700)),
-                                          Text(
-                                            Provider.of<AuthProvider>(context,
-                                                    listen: false)
-                                                .filterAllUsersFormFirebase[
-                                                    index]
-                                                .lastMessage,
-                                            style: const TextStyle(
+                                          const Text(
+                                            'last message',
+                                            style: TextStyle(
                                                 fontSize: 11,
                                                 color: Colors.grey),
                                           ),
@@ -172,8 +157,7 @@ class _ChatMainState extends State<ChatMain> {
                                       ),
                                     ],
                                   ),
-                                  Text(subMessageProvider.convertDataTime(
-                                      allUsers.lastMessageTime)),
+                                  const Text('10:40 Am'),
                                 ],
                               ),
                             ),
