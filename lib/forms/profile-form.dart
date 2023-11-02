@@ -141,7 +141,7 @@ class ProfileForm extends StatelessWidget {
             onPressed: () async {
               try {
                 if (formKey.currentState!.validate()) {
-                  await subAuthProvider.addUserInfoInFirebase(
+                  await subAuthProvider.updateUser(
                     firstName: firstNameController.text.trim(),
                     lastName: lastNameController.text.trim(),
                     phone: phoneController.text.trim(),

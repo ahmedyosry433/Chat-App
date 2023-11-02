@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:chat_app/core/constants/const.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,7 +22,6 @@ class AuthProvider with ChangeNotifier {
       email: emailController.text.trim(),
       password: passwordController.text.trim(),
     );
-    setIsOnilne(isOnline: true);
     notifyListeners();
   }
 
@@ -55,10 +55,14 @@ class AuthProvider with ChangeNotifier {
 
   Future setIsOnilne({required bool isOnline}) async {
     User? user = FirebaseAuth.instance.currentUser;
-
-    await FirebaseFirestore.instance.collection('user').doc(user!.uid).update({
-      'isOnline': isOnline,
-    });
+    if (user != null) {
+      await FirebaseFirestore.instance
+          .collection('user')
+          .doc(user!.uid)
+          .update({
+        'isOnline': isOnline,
+      });
+    }
     notifyListeners();
   }
 
@@ -92,10 +96,24 @@ class AuthProvider with ChangeNotifier {
       'phone': phone,
       'email': user.email,
       'isOnline': true,
-      'imageUrl': imageUrlFromFirbase ??
-          userAlreadyexist['imageUrl'] ??
-          Constants.defualtImageUrl,
+      'imageUrl': Constants.defualtImageUrl,
       // 'myToken': myToken,
+    });
+    await getUsersFromFirestore();
+    notifyListeners();
+  }
+
+  Future<void> updateUser({
+    required String firstName,
+    required String lastName,
+    required String phone,
+  }) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    // final myToken = await FirebaseMessaging.instance.getToken();
+    await FirebaseFirestore.instance.collection('user').doc(user!.uid).update({
+      'firstName': firstName,
+      'lastName': lastName,
+      'phone': phone,
     });
     await getUsersFromFirestore();
     notifyListeners();
@@ -128,7 +146,7 @@ class AuthProvider with ChangeNotifier {
 
   dynamic userAlreadyexist;
 
-  Future<Map<String, dynamic>> getUserByUid(String userUid) async {
+  getUserByUid(String userUid) async {
     try {
       DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
           .collection('user')
@@ -144,7 +162,6 @@ class AuthProvider with ChangeNotifier {
       userAlreadyexist = {};
     }
     notifyListeners();
-    return {};
   }
 
   List<UserInformation> allUsersFormFirebase = [];
@@ -169,7 +186,7 @@ class AuthProvider with ChangeNotifier {
           phone: userDoc['phone'],
           userId: userDoc['userId'],
           isOnline: userDoc['isOnline'],
-          imageUrl: userDoc['imageUrl'],
+          imageUrl: userDoc['imageUrl'] ?? Constants.defualtImageUrl,
           // myToken: userDoc['myToken'],
 
           //-------issue : return null - if user create account--------------

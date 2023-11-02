@@ -251,6 +251,7 @@ class SignupForm extends StatelessWidget {
                   Navigator.pushNamed(context, '/splash');
                 }
               } catch (e) {
+                print('_______$e');
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text('Faild Signup $e')));
               }
