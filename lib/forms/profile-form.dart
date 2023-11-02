@@ -10,7 +10,11 @@ import '../provider/auth-provider.dart';
 
 // ignore: must_be_immutable
 class ProfileForm extends StatelessWidget {
-  ProfileForm({super.key,required this.firstNameValue,required this.lastNameValue ,required this.phoneNameValue});
+  ProfileForm(
+      {super.key,
+      required this.firstNameValue,
+      required this.lastNameValue,
+      required this.phoneNameValue});
   String firstNameValue;
   String lastNameValue;
   String phoneNameValue;
@@ -18,11 +22,13 @@ class ProfileForm extends StatelessWidget {
   GlobalKey<FormState> formKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
-  final TextEditingController firstNameController =
-      TextEditingController(text: firstNameValue);
-  final TextEditingController lastNameController = TextEditingController(text:lastNameValue);
+    final TextEditingController firstNameController =
+        TextEditingController(text: firstNameValue);
+    final TextEditingController lastNameController =
+        TextEditingController(text: lastNameValue);
 
-  final TextEditingController phoneController = TextEditingController(text: phoneNameValue);
+    final TextEditingController phoneController =
+        TextEditingController(text: phoneNameValue);
     final subAuthProvider = Provider.of<AuthProvider>(context, listen: false);
     return Form(
       key: formKey,
