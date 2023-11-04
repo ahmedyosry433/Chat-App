@@ -58,7 +58,7 @@ class _ChatMainState extends State<ChatMain> {
               child: CircularProgressIndicator(),
             )
           : Column(
-              children: [
+              children: [ 
                 const AppbarMainChat(),
                 subAuthProvider.filterAllUsersOnline.isEmpty
                     ? const Text('No Active Users')

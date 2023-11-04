@@ -11,6 +11,7 @@ class UserInformation {
   String email;
   bool isOnline;
   String imageUrl;
+  Timestamp lastSeen;
   // String myToken;
   // String lastMessage;
   // Timestamp lastMessageTime;
@@ -23,6 +24,7 @@ class UserInformation {
     required this.email,
     required this.isOnline,
     required this.imageUrl,
+    required this.lastSeen,
     // required this.myToken,
     // required this.lastMessage,
     // required this.lastMessageTime,
@@ -37,6 +39,7 @@ class UserInformation {
       email: data['email'],
       imageUrl: data['imageUrl'],
       isOnline: data['isOnline'],
+      lastSeen: data['lastSeen'],
       // myToken: data['myToken'],
       // lastMessage: data['lastMessage'],
       // lastMessageTime: data['lastMessageTime'],

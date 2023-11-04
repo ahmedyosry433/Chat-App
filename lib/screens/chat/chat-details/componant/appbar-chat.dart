@@ -3,6 +3,7 @@
 import 'package:chat_app/core/theme/app-colors/app-colors-light.dart';
 import 'package:chat_app/model/user-model.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class AppbarChat extends StatelessWidget {
   AppbarChat({super.key, required this.userinfor});
@@ -48,8 +49,12 @@ class AppbarChat extends StatelessWidget {
                     style: const TextStyle(
                         fontSize: 17, fontWeight: FontWeight.bold),
                   ),
+                  const SizedBox(height: 3),
                   Text(
-                    userinfor.isOnline ? 'online' : 'last seen',
+                    userinfor.isOnline
+                        ? 'online'
+                        : DateFormat('hh:mm a dd-MMM')
+                            .format(userinfor.lastSeen.toDate()),
                     style: const TextStyle(fontSize: 12),
                   ),
                 ],

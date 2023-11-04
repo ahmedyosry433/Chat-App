@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:chat_app/core/constants/const.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,6 +24,27 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> addUserInfoInFirebase({
+    required String firstName,
+    required String lastName,
+    required String phone,
+  }) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    // final myToken = await FirebaseMessaging.instance.getToken();
+    await FirebaseFirestore.instance.collection('user').doc(user!.uid).set({
+      'userId': user.uid,
+      'firstName': firstName,
+      'lastName': lastName,
+      'phone': phone,
+      'email': user.email,
+      'isOnline': true,
+      'imageUrl': Constants.defualtImageUrl, 'lastSeen': Timestamp.now(),
+      // 'myToken': myToken,
+    });
+
+    notifyListeners();
+  }
+
   Future logIn(
       {required TextEditingController emailController,
       required TextEditingController passwordController}) async {
@@ -39,6 +59,7 @@ class AuthProvider with ChangeNotifier {
 
   Future logOut() async {
     await setIsOnilne(isOnline: false);
+    await setLastSeen();
     await FirebaseAuth.instance.signOut();
     notifyListeners();
   }
@@ -56,11 +77,18 @@ class AuthProvider with ChangeNotifier {
   Future setIsOnilne({required bool isOnline}) async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      await FirebaseFirestore.instance
-          .collection('user')
-          .doc(user!.uid)
-          .update({
+      await FirebaseFirestore.instance.collection('user').doc(user.uid).update({
         'isOnline': isOnline,
+      });
+    }
+    notifyListeners();
+  }
+
+  Future setLastSeen() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance.collection('user').doc(user.uid).update({
+        'lastSeen': Timestamp.now(),
       });
     }
     notifyListeners();
@@ -81,27 +109,6 @@ class AuthProvider with ChangeNotifier {
   }
 
   //-------Add Users To Firebase ---------------------
-
-  Future<void> addUserInfoInFirebase({
-    required String firstName,
-    required String lastName,
-    required String phone,
-  }) async {
-    User? user = FirebaseAuth.instance.currentUser;
-    // final myToken = await FirebaseMessaging.instance.getToken();
-    await FirebaseFirestore.instance.collection('user').doc(user!.uid).set({
-      'userId': user.uid,
-      'firstName': firstName,
-      'lastName': lastName,
-      'phone': phone,
-      'email': user.email,
-      'isOnline': true,
-      'imageUrl': Constants.defualtImageUrl,
-      // 'myToken': myToken,
-    });
-    await getUsersFromFirestore();
-    notifyListeners();
-  }
 
   Future<void> updateUser({
     required String firstName,
@@ -186,6 +193,7 @@ class AuthProvider with ChangeNotifier {
           phone: userDoc['phone'],
           userId: userDoc['userId'],
           isOnline: userDoc['isOnline'],
+          lastSeen: userDoc['lastSeen'],
           imageUrl: userDoc['imageUrl'] ?? Constants.defualtImageUrl,
           // myToken: userDoc['myToken'],
 

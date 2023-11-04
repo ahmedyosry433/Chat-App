@@ -34,7 +34,8 @@ class MessageProvider with ChangeNotifier {
       'lastName': userData.data()!['lastName'],
       'token': userData.data()!['token']
     });
-    sentNatification(
+
+    sendNotification(
         senderName:
             '${userData.data()!['firstName']} ${userData.data()!['lastName']}',
         message: entryMessage,
@@ -43,13 +44,15 @@ class MessageProvider with ChangeNotifier {
     notifyListeners();
   }
 
+//--------Convert data----------------------
   String convertDataTime(Timestamp timeStamp) {
     var format = DateFormat('hh:mm a').format(timeStamp.toDate());
     notifyListeners();
     return format;
   }
 
-  sentNatification(
+//---------notification-----------------------
+  sendNotification(
       {required String senderName,
       required String message,
       required String token}) async {
