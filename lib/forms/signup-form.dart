@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, use_build_context_synchronously, unused_import
+// ignore_for_file: file_names, use_build_context_synchronously, unused_import, avoid_print
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -251,7 +251,6 @@ class SignupForm extends StatelessWidget {
                   Navigator.pushNamed(context, '/splash');
                 }
               } catch (e) {
-                print('_______$e');
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text('Faild Signup $e')));
               }

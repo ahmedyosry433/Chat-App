@@ -16,7 +16,6 @@ class MessageProvider with ChangeNotifier {
       required String chatId}) async {
     final entryMessage = entryMessageController.text;
 
-
     if (entryMessage.trim().isEmpty) {
       return;
     }
@@ -36,7 +35,7 @@ class MessageProvider with ChangeNotifier {
       'firstName': userData.data()!['firstName'],
       'lastName': userData.data()!['lastName'],
     });
-  
+
     sendNotification(
         senderName:
             '${userData.data()!['firstName']} ${userData.data()!['lastName']}',
@@ -56,23 +55,39 @@ class MessageProvider with ChangeNotifier {
   }
 
   //---------save all Devices tokens-------------------
-  List userNotificationTokens = [];
-  setUserNotificationDevice() async {
+  List<String?> userNotificationTokens = [];
+  Future setUserNotificationDevice({required String currentUserUid}) async {
+    print('___________1');
+    await getCurrentTokensByUid(currentUserUid: currentUserUid);
+
+    print('___________tokens________$userNotificationTokens');
+    print('___________2');
     var token = await FirebaseMessaging.instance.getToken();
     if (token != null) {
+      print('___________3');
       if (userNotificationTokens.isEmpty) {
+        print('___________4');
         userNotificationTokens.add(token);
+        print('___________5');
       } else {
+        print('___________6');
         var savedToken = userNotificationTokens
             .firstWhere((item) => item == token, orElse: () => null);
+        print('___________7');
         if (savedToken != null) {
+          print('___________8');
           return;
         } else {
-          savedToken.add(token);
+          print('___________9');
+          userNotificationTokens.add(token);
         }
       }
     }
-    saveNotificationTokensTofirebase();
+    print('___________10');
+    await saveNotificationTokensTofirebase();
+    print('___________tokens________$userNotificationTokens');
+
+    print('___________11');
     notifyListeners();
   }
 
@@ -89,6 +104,21 @@ class MessageProvider with ChangeNotifier {
   }
 
 //--------------------------------------------
+  // List currentUserTokens = [];
+  getCurrentTokensByUid({required String currentUserUid}) async {
+    QuerySnapshot userSnapshots = await FirebaseFirestore.instance
+        .collection('user')
+        .doc(currentUserUid)
+        .collection('tokens')
+        .get();
+
+    for (var userDoc in userSnapshots.docs) {
+      userNotificationTokens.add(userDoc['deviceToken']);
+    }
+    notifyListeners();
+  }
+
+  //-----------------------------------------------
   List userRecived = [];
   getUserTokensByUid({required String userUid}) async {
     QuerySnapshot userSnapshots = await FirebaseFirestore.instance
@@ -109,7 +139,6 @@ class MessageProvider with ChangeNotifier {
       required String message,
       required List tokens}) async {
     for (var token in userRecived) {
- 
       var headersList = {
         'Accept': '*/*',
         'User-Agent': 'Thunder Client (https://www.thunderclient.com)',

@@ -24,17 +24,26 @@ class _ChatMainState extends State<ChatMain> {
   @override
   void initState() {
     getUsersFromFirestore();
-    getToken();
+    getTokens();
     super.initState();
   }
 
-  getToken() async {
-    context.read<MessageProvider>().setUserNotificationDevice();
-    print('________________________done token');
+//-------------get tokens------------------------------------
+  getTokens() {
+    // context
+    //     .read<MessageProvider>()
+    //     .getCurrentTokensByUid(currentUserUid: user!.uid);
     print(
-        '________________________done token${context.read<MessageProvider>().userNotificationTokens}');
+        '_____________111111111111111111___________done token${context.read<MessageProvider>().userNotificationTokens}');
+    context
+        .read<MessageProvider>()
+        .setUserNotificationDevice(currentUserUid: user!.uid);
+    print(
+        '_______________22222222222222_________done token${context.read<MessageProvider>().userNotificationTokens}');
+    print('________________________done token');
   }
 
+//---------------get users----------------------------------------
   getUsersFromFirestore() {
     context.read<AuthProvider>().getCurrentUserByUid(user!.uid);
     context.read<AuthProvider>().getUsersFromFirestore();
