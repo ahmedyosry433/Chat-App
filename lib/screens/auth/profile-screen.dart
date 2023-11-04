@@ -41,11 +41,11 @@ class Profile extends StatelessWidget {
                   CircleAvatar(
                     radius: 50,
                     foregroundImage: imageFromFirebase == null
-                        ? subAuthProvider.userAlreadyexist['imageUrl'] == null
+                        ? subAuthProvider.getCurrentUser['imageUrl'] == null
                             ? const NetworkImage(
                                 'https://upload.wikimedia.org/wikipedia/commons/9/9a/No_avatar.png')
                             : NetworkImage(
-                                subAuthProvider.userAlreadyexist['imageUrl'])
+                                subAuthProvider.getCurrentUser['imageUrl'])
                         : null,
                     backgroundImage: imageFromFirebase != null
                         ? FileImage(imageFromFirebase)
@@ -67,9 +67,9 @@ class Profile extends StatelessWidget {
                 ]),
                 const SizedBox(height: 50),
                 ProfileForm(
-                  firstNameValue: subAuthProvider.userAlreadyexist['firstName'],
-                  lastNameValue: subAuthProvider.userAlreadyexist['lastName'],
-                  phoneNameValue: subAuthProvider.userAlreadyexist['phone'],
+                  firstNameValue: subAuthProvider.getCurrentUser['firstName'],
+                  lastNameValue: subAuthProvider.getCurrentUser['lastName'],
+                  phoneNameValue: subAuthProvider.getCurrentUser['phone'],
                 ),
               ],
             ),

@@ -1,10 +1,10 @@
 // ignore_for_file: file_names, unnecessary_null_comparison, avoid_print
 
 import 'package:chat_app/core/theme/app-colors/app-colors-light.dart';
+import 'package:chat_app/provider/message-provider.dart';
 import 'package:chat_app/screens/chat/chat-main/components/appbar-chat-main.dart';
 import 'package:chat_app/widgets/online-image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -29,12 +29,14 @@ class _ChatMainState extends State<ChatMain> {
   }
 
   getToken() async {
-    String? myToken = await FirebaseMessaging.instance.getToken();
-    print('________________________$myToken');
+    context.read<MessageProvider>().setUserNotificationDevice();
+    print('________________________done token');
+    print(
+        '________________________done token${context.read<MessageProvider>().userNotificationTokens}');
   }
 
   getUsersFromFirestore() {
-    context.read<AuthProvider>().getUserByUid(user!.uid);
+    context.read<AuthProvider>().getCurrentUserByUid(user!.uid);
     context.read<AuthProvider>().getUsersFromFirestore();
   }
 
@@ -58,7 +60,7 @@ class _ChatMainState extends State<ChatMain> {
               child: CircularProgressIndicator(),
             )
           : Column(
-              children: [ 
+              children: [
                 const AppbarMainChat(),
                 subAuthProvider.filterAllUsersOnline.isEmpty
                     ? const Text('No Active Users')

@@ -70,6 +70,7 @@ class ChatSentMessage extends StatelessWidget {
                   await subProviderMessage.sentMessage(
                       entryMessageController: _entryMessageController,
                       chatId: createChatId());
+                      
                 } catch (e) {
                   ScaffoldMessenger.of(context)
                       .showSnackBar(SnackBar(content: Text('Faild Send $e')));

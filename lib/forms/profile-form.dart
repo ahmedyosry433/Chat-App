@@ -51,7 +51,7 @@ class ProfileForm extends StatelessWidget {
               keyboardType: TextInputType.name,
               decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.person),
-                  hintText: '${subAuthProvider.userAlreadyexist['firstName']}',
+                  hintText: '${subAuthProvider.getCurrentUser['firstName']}',
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
                     borderSide:
@@ -80,7 +80,7 @@ class ProfileForm extends StatelessWidget {
               keyboardType: TextInputType.name,
               decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.person),
-                  hintText: '${subAuthProvider.userAlreadyexist['lastName']}',
+                  hintText: '${subAuthProvider.getCurrentUser['lastName']}',
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
                     borderSide:
@@ -100,7 +100,7 @@ class ProfileForm extends StatelessWidget {
               enabled: false,
               decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.email),
-                  hintText: '${subAuthProvider.userAlreadyexist['email']}',
+                  hintText: '${subAuthProvider.getCurrentUser['email']}',
                   disabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30),
                       borderSide:
@@ -124,7 +124,7 @@ class ProfileForm extends StatelessWidget {
               keyboardType: TextInputType.phone,
               decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.phone),
-                  hintText: '${subAuthProvider.userAlreadyexist['phone']}',
+                  hintText: '${subAuthProvider.getCurrentUser['phone']}',
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
                     borderSide:
@@ -141,7 +141,7 @@ class ProfileForm extends StatelessWidget {
             onPressed: () async {
               try {
                 if (formKey.currentState!.validate()) {
-                  await subAuthProvider.updateUser(
+                  await subAuthProvider.updateUserProfile(
                     firstName: firstNameController.text.trim(),
                     lastName: lastNameController.text.trim(),
                     phone: phoneController.text.trim(),

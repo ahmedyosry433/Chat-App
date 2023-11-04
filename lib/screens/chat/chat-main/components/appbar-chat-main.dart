@@ -66,11 +66,11 @@ class AppbarMainChat extends StatelessWidget {
                     child: CircleAvatar(
                       radius: 50,
                       foregroundImage: NetworkImage(
-                          '${subAuthProvider.userAlreadyexist['imageUrl']}'),
+                          '${subAuthProvider.getCurrentUser['imageUrl']}'),
                     ),
                   ),
                 ),
-                Text('${subAuthProvider.userAlreadyexist['firstName']}'),
+                Text('${subAuthProvider.getCurrentUser['firstName']}'),
                 const SizedBox(height: 5),
                 GestureDetector(
                     onTap: () async {

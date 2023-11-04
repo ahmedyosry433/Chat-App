@@ -38,8 +38,8 @@ class AuthProvider with ChangeNotifier {
       'phone': phone,
       'email': user.email,
       'isOnline': true,
-      'imageUrl': Constants.defualtImageUrl, 'lastSeen': Timestamp.now(),
-      // 'myToken': myToken,
+      'imageUrl': Constants.defualtImageUrl,
+      'lastSeen': Timestamp.now(),
     });
 
     notifyListeners();
@@ -110,7 +110,7 @@ class AuthProvider with ChangeNotifier {
 
   //-------Add Users To Firebase ---------------------
 
-  Future<void> updateUser({
+  Future<void> updateUserProfile({
     required String firstName,
     required String lastName,
     required String phone,
@@ -151,9 +151,9 @@ class AuthProvider with ChangeNotifier {
 
   //-------------Get Users ----------------------
 
-  dynamic userAlreadyexist;
+  dynamic getCurrentUser;
 
-  getUserByUid(String userUid) async {
+  getCurrentUserByUid(String userUid) async {
     try {
       DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
           .collection('user')
@@ -161,12 +161,12 @@ class AuthProvider with ChangeNotifier {
           .get();
 
       if (userSnapshot.exists) {
-        userAlreadyexist = userSnapshot.data();
+        getCurrentUser = userSnapshot.data();
       } else {
-        userAlreadyexist = {};
+        getCurrentUser = {};
       }
     } catch (e) {
-      userAlreadyexist = {};
+      getCurrentUser = {};
     }
     notifyListeners();
   }
@@ -195,7 +195,6 @@ class AuthProvider with ChangeNotifier {
           isOnline: userDoc['isOnline'],
           lastSeen: userDoc['lastSeen'],
           imageUrl: userDoc['imageUrl'] ?? Constants.defualtImageUrl,
-          // myToken: userDoc['myToken'],
 
           //-------issue : return null - if user create account--------------
           // lastMessage: lastMessage!['text'] ?? '',
@@ -206,7 +205,6 @@ class AuthProvider with ChangeNotifier {
       allUsersFormFirebase = users;
       filterUsers(currntUser.uid);
       filterUsersOnline();
-      // setIsImage();
     }
     isLoad = true;
     //stop loading
@@ -217,14 +215,12 @@ class AuthProvider with ChangeNotifier {
 
   File? pickedImageProfile;
   Future<void> pickImageProfile(ImageSource source) async {
-    isLoad = false;
-    if (!isLoad) {
-      final pick = ImagePicker();
-      final pickedFile = await pick.pickImage(source: source, imageQuality: 80);
-      if (pickedFile != null) {
-        pickedImageProfile = File(pickedFile.path);
-      }
+    final pick = ImagePicker();
+    final pickedFile = await pick.pickImage(source: source, imageQuality: 80);
+    if (pickedFile != null) {
+      pickedImageProfile = File(pickedFile.path);
     }
+
     await saveImagePickerInFirebase();
     isLoad = true;
     notifyListeners();
@@ -232,8 +228,6 @@ class AuthProvider with ChangeNotifier {
 
   String? imageUrlFromFirbase;
   Future saveImagePickerInFirebase() async {
-    // isLoad = false;
-
     final user = FirebaseAuth.instance.currentUser!.uid;
     final Reference storgeRef =
         FirebaseStorage.instance.ref().child('user_images').child('$user.jpg');
