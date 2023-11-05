@@ -28,6 +28,8 @@ class _ChatMainState extends State<ChatMain> {
     super.initState();
   }
 
+
+
 //-------------get tokens------------------------------------
   getTokens() {
     context
@@ -50,9 +52,9 @@ class _ChatMainState extends State<ChatMain> {
     return SafeArea(
         child: Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => Navigator.pushNamed(context, '/contact'),
         child: const Icon(
-          Icons.chat_bubble_outlined,
+          Icons.chat_sharp,
           size: 30,
         ),
       ),
