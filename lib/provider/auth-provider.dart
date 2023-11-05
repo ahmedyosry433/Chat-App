@@ -116,7 +116,7 @@ class AuthProvider with ChangeNotifier {
     required String phone,
   }) async {
     User? user = FirebaseAuth.instance.currentUser;
-    // final myToken = await FirebaseMessaging.instance.getToken();
+
     await FirebaseFirestore.instance.collection('user').doc(user!.uid).update({
       'firstName': firstName,
       'lastName': lastName,
@@ -134,6 +134,7 @@ class AuthProvider with ChangeNotifier {
     filterAllUsersFormFirebase = allUsersFormFirebase
         .where((user) => user.userId != currentUserId)
         .toList();
+    allUsersFormFirebase = filterAllUsersFormFirebase;
     notifyListeners();
     return filterAllUsersFormFirebase;
   }
@@ -141,15 +142,35 @@ class AuthProvider with ChangeNotifier {
   List<UserInformation> filterAllUsersOnline = [];
 
   List<UserInformation> filterUsersOnline() {
-    filterAllUsersOnline = filterAllUsersFormFirebase
-        .where((user) => user.isOnline == true)
-        .toList();
+    filterAllUsersOnline =
+        allUsersFormFirebase.where((user) => user.isOnline == true).toList();
 
     notifyListeners();
     return filterAllUsersOnline;
   }
 
   //-------------Get Users ----------------------
+  setUserToList({required QuerySnapshot userSnapshot}) {
+    List<UserInformation> users = [];
+    final currntUser = FirebaseAuth.instance.currentUser!;
+
+    for (var userDoc in userSnapshot.docs) {
+      users.add(UserInformation(
+        email: userDoc['email'],
+        firstName: userDoc['firstName'],
+        lastName: userDoc['lastName'],
+        phone: userDoc['phone'],
+        userId: userDoc['userId'],
+        isOnline: userDoc['isOnline'],
+        lastSeen: userDoc['lastSeen'],
+        imageUrl: userDoc['imageUrl'] ?? Constants.defualtImageUrl,
+      ));
+    }
+    allUsersFormFirebase = users;
+
+    filterUsers(currntUser.uid);
+    filterUsersOnline();
+  }
 
   dynamic getCurrentUser;
 
@@ -172,39 +193,13 @@ class AuthProvider with ChangeNotifier {
   }
 
   List<UserInformation> allUsersFormFirebase = [];
+
   bool isLoad = false;
   Future<void> getUsersFromFirestore() async {
     if (!isLoad) {
       QuerySnapshot userSnapshots =
           await FirebaseFirestore.instance.collection('user').get();
-      List<UserInformation> users = [];
-      final currntUser = FirebaseAuth.instance.currentUser!;
-      for (var userDoc in userSnapshots.docs) {
-        // List<String> sortedUserIds = [currntUser.uid, userDoc['userId']]
-        //   ..sort();
-
-        // final lastMessage =
-        // await getLastMessage(createChatId: sortedUserIds.join('_'));
-
-        users.add(UserInformation(
-          email: userDoc['email'],
-          firstName: userDoc['firstName'],
-          lastName: userDoc['lastName'],
-          phone: userDoc['phone'],
-          userId: userDoc['userId'],
-          isOnline: userDoc['isOnline'],
-          lastSeen: userDoc['lastSeen'],
-          imageUrl: userDoc['imageUrl'] ?? Constants.defualtImageUrl,
-
-          //-------issue : return null - if user create account--------------
-          // lastMessage: lastMessage!['text'] ?? '',
-          // lastMessageTime: lastMessage['createdAt'] ?? '',
-          // --------------------------------------------
-        ));
-      }
-      allUsersFormFirebase = users;
-      filterUsers(currntUser.uid);
-      filterUsersOnline();
+      setUserToList(userSnapshot: userSnapshots);
     }
     isLoad = true;
     //stop loading
@@ -261,15 +256,18 @@ class AuthProvider with ChangeNotifier {
 
   //-------------------------Search--------------------------------------
   Future<void> searchUsers(String searchText) async {
+    allUsersFormFirebase = [];
     final usersCollection = FirebaseFirestore.instance.collection('user');
-
     if (searchText.isNotEmpty) {
       final querySnapshot = await usersCollection
           .where('firstName', isGreaterThanOrEqualTo: searchText)
           .where('firstName', isLessThanOrEqualTo: '${searchText}z')
           .get();
-      print('______________________________${querySnapshot.docs}');
-      // final searchResults = querySnapshot.docs;
+      setUserToList(userSnapshot: querySnapshot);
+    } else {
+      final querySnapshot = await usersCollection.get();
+      setUserToList(userSnapshot: querySnapshot);
     }
+    notifyListeners();
   }
 }

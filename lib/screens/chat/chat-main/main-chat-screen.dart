@@ -5,6 +5,7 @@ import 'package:chat_app/provider/message-provider.dart';
 import 'package:chat_app/screens/chat/chat-main/components/appbar-chat-main.dart';
 import 'package:chat_app/widgets/online-image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,10 +26,22 @@ class _ChatMainState extends State<ChatMain> {
   void initState() {
     getUsersFromFirestore();
     getTokens();
+    messageForegroung();
     super.initState();
   }
 
-
+  messageForegroung() async {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('___________________');
+      if (message.notification != null) {
+        print(message.notification!.title);
+        print(message.notification!.body);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+                '${message.notification!.title}\n${message.notification!.body}')));
+      }
+    });
+  }
 
 //-------------get tokens------------------------------------
   getTokens() {
@@ -65,7 +78,7 @@ class _ChatMainState extends State<ChatMain> {
           : Column(
               children: [
                 const AppbarMainChat(),
-                subAuthProvider.filterAllUsersOnline.isEmpty
+                subAuthProvider.allUsersFormFirebase.isEmpty
                     ? const Text('No Active Users')
                     : SizedBox(
                         height: 100,
@@ -75,14 +88,14 @@ class _ChatMainState extends State<ChatMain> {
                               itemCount:
                                   subsubAuthProvider.filterUsersOnline().length,
                               itemBuilder: ((context, index) {
-                                final allUsers =
+                                final userFilter =
                                     subAuthProvider.filterAllUsersOnline[index];
                                 return GestureDetector(
                                   onTap: () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => ChatDetails(
-                                                user: allUsers,
+                                                user: userFilter,
                                               ))),
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
@@ -101,13 +114,13 @@ class _ChatMainState extends State<ChatMain> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           children: [
-                                            Text('${allUsers.firstName} ',
+                                            Text('${userFilter.firstName} ',
                                                 style: const TextStyle(
                                                     fontSize: 13,
                                                     fontWeight:
                                                         FontWeight.w600)),
                                             Text(
-                                              ' ${allUsers.lastName}',
+                                              ' ${userFilter.lastName}',
                                               style: const TextStyle(
                                                 fontSize: 13,
                                                 fontWeight: FontWeight.w600,
@@ -129,7 +142,7 @@ class _ChatMainState extends State<ChatMain> {
                   child: ListView.builder(
                       itemCount: subAuthProvider.filterUsers(user!.uid).length,
                       itemBuilder: ((context, index) {
-                        final allUsers =
+                        final userFilter =
                             subAuthProvider.filterAllUsersFormFirebase[index];
 
                         return GestureDetector(
@@ -137,7 +150,7 @@ class _ChatMainState extends State<ChatMain> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => ChatDetails(
-                                        user: allUsers,
+                                        user: userFilter,
                                       ))),
                           child: SizedBox(
                             child: Padding(
@@ -152,8 +165,8 @@ class _ChatMainState extends State<ChatMain> {
                                           height: 50,
                                           width: 50,
                                           child: CircleAvatar(
-                                            foregroundImage:
-                                                NetworkImage(allUsers.imageUrl),
+                                            foregroundImage: NetworkImage(
+                                                userFilter.imageUrl),
                                           )),
                                       const SizedBox(width: 10),
                                       Column(
@@ -161,7 +174,7 @@ class _ChatMainState extends State<ChatMain> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                              '${allUsers.firstName} ${allUsers.lastName}',
+                                              '${userFilter.firstName} ${userFilter.lastName}',
                                               style: const TextStyle(
                                                   fontSize: 15,
                                                   fontWeight: FontWeight.w700)),
