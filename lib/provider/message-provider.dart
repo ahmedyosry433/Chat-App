@@ -57,37 +57,24 @@ class MessageProvider with ChangeNotifier {
   //---------save all Devices tokens-------------------
   List<String?> userNotificationTokens = [];
   Future setUserNotificationDevice({required String currentUserUid}) async {
-    print('___________1');
     await getCurrentTokensByUid(currentUserUid: currentUserUid);
 
-    print('___________tokens________$userNotificationTokens');
-    print('___________2');
     var token = await FirebaseMessaging.instance.getToken();
     if (token != null) {
-      print('___________3');
       if (userNotificationTokens.isEmpty) {
-        print('___________4');
         userNotificationTokens.add(token);
-        print('___________5');
       } else {
-        print('___________6');
         var savedToken = userNotificationTokens
             .firstWhere((item) => item == token, orElse: () => null);
-        print('___________7');
         if (savedToken != null) {
-          print('___________8');
           return;
         } else {
-          print('___________9');
           userNotificationTokens.add(token);
         }
       }
     }
-    print('___________10');
     await saveNotificationTokensTofirebase();
-    print('___________tokens________$userNotificationTokens');
 
-    print('___________11');
     notifyListeners();
   }
 
@@ -158,13 +145,7 @@ class MessageProvider with ChangeNotifier {
       req.body = json.encode(body);
 
       var res = await req.send();
-      final resBody = await res.stream.bytesToString();
-
-      if (res.statusCode >= 200 && res.statusCode < 300) {
-        print('___body___$resBody');
-      } else {
-        print(res.reasonPhrase);
-      }
+      await res.stream.bytesToString();
     }
   }
 

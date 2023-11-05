@@ -42,6 +42,7 @@ class AppbarMainChat extends StatelessWidget {
                   color: AppColorLight.whiteColor,
                   borderRadius: BorderRadius.circular(30)),
               child: TextField(
+                  onChanged: (value) => subAuthProvider.searchUsers(value),
                   decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: 'Search',

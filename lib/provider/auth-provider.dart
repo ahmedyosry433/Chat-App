@@ -68,7 +68,7 @@ class AuthProvider with ChangeNotifier {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
     } catch (e) {
-      print('______________Error sending password reset email: $e');
+      throw Exception('Error sending password reset email: $e');
     }
   }
 
@@ -257,5 +257,19 @@ class AuthProvider with ChangeNotifier {
       return querySnapshot.docs[0];
     }
     return null;
+  }
+
+  //-------------------------Search--------------------------------------
+  Future<void> searchUsers(String searchText) async {
+    final usersCollection = FirebaseFirestore.instance.collection('user');
+
+    if (searchText.isNotEmpty) {
+      final querySnapshot = await usersCollection
+          .where('firstName', isGreaterThanOrEqualTo: searchText)
+          .where('firstName', isLessThanOrEqualTo: '${searchText}z')
+          .get();
+      print('______________________________${querySnapshot.docs}');
+      // final searchResults = querySnapshot.docs;
+    }
   }
 }

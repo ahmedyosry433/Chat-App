@@ -32,8 +32,7 @@ class _ChatMessageState extends State<ChatMessage> {
         signInUser = currentUser!;
       }
     } catch (e) {
-      print(
-          '___________from getCurrentUser in chatMessage_____________________$e');
+      throw Exception(' error from get curent user $e');
     }
   }
 

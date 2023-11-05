@@ -30,17 +30,9 @@ class _ChatMainState extends State<ChatMain> {
 
 //-------------get tokens------------------------------------
   getTokens() {
-    // context
-    //     .read<MessageProvider>()
-    //     .getCurrentTokensByUid(currentUserUid: user!.uid);
-    print(
-        '_____________111111111111111111___________done token${context.read<MessageProvider>().userNotificationTokens}');
     context
         .read<MessageProvider>()
         .setUserNotificationDevice(currentUserUid: user!.uid);
-    print(
-        '_______________22222222222222_________done token${context.read<MessageProvider>().userNotificationTokens}');
-    print('________________________done token');
   }
 
 //---------------get users----------------------------------------
