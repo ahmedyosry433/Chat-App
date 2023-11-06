@@ -9,10 +9,18 @@ import '../../../../provider/message-provider.dart';
 
 // ignore: must_be_immutable
 class ChatSentMessage extends StatelessWidget {
-  ChatSentMessage({super.key, required this.user});
+  ChatSentMessage(
+      {super.key,
+      required this.user,
+      required this.changeShowEmoji,
+      required this.showEmoji,
+      required this.entryMessageController});
   UserInformation? user;
+  Function changeShowEmoji;
+  bool showEmoji;
+  final TextEditingController entryMessageController;
+
   String currentUserId = FirebaseAuth.instance.currentUser!.uid;
-  final TextEditingController _entryMessageController = TextEditingController();
 
   String createChatId() {
     final currentUser = FirebaseAuth.instance.currentUser!.uid;
@@ -37,12 +45,21 @@ class ChatSentMessage extends StatelessWidget {
                 children: [
                   Expanded(
                       child: TextField(
-                    controller: _entryMessageController,
+                    controller: entryMessageController,
+                    onTap: () {
+                      if (showEmoji) {
+                        FocusScope.of(context).unfocus();
+                        changeShowEmoji();
+                      }
+                    },
                     decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'Send Message',
                         icon: IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              FocusScope.of(context).unfocus();
+                              changeShowEmoji();
+                            },
                             icon: const Icon(
                               Icons.emoji_emotions,
                               color: Color.fromARGB(190, 0, 0, 0),
@@ -68,9 +85,8 @@ class ChatSentMessage extends StatelessWidget {
               onPressed: () async {
                 try {
                   await subProviderMessage.sentMessage(
-                      entryMessageController: _entryMessageController,
+                      entryMessageController: entryMessageController,
                       chatId: createChatId());
-                      
                 } catch (e) {
                   ScaffoldMessenger.of(context)
                       .showSnackBar(SnackBar(content: Text('Faild Send $e')));
