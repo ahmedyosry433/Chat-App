@@ -197,9 +197,11 @@ class AuthProvider with ChangeNotifier {
   bool isLoad = false;
   Future<void> getUsersFromFirestore() async {
     if (!isLoad) {
-      QuerySnapshot userSnapshots =
-          await FirebaseFirestore.instance.collection('user').get();
-      setUserToList(userSnapshot: userSnapshots);
+      final query = FirebaseFirestore.instance
+          .collection('user')
+          .orderBy('firstName', descending: false);
+      QuerySnapshot usersnapshots = await query.get();
+      setUserToList(userSnapshot: usersnapshots);
     }
     isLoad = true;
     //stop loading

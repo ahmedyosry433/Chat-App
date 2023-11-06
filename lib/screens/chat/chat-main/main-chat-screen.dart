@@ -1,6 +1,7 @@
-// ignore_for_file: file_names, unnecessary_null_comparison, avoid_print
+// ignore_for_file: file_names, unnecessary_null_comparison, avoid_print, unrelated_type_equality_checks, use_build_context_synchronously
 
 import 'package:chat_app/core/theme/app-colors/app-colors-light.dart';
+import 'package:chat_app/model/user-model.dart';
 import 'package:chat_app/provider/message-provider.dart';
 import 'package:chat_app/screens/chat/chat-main/components/appbar-chat-main.dart';
 import 'package:chat_app/widgets/online-image.dart';
@@ -26,13 +27,17 @@ class _ChatMainState extends State<ChatMain> {
   void initState() {
     getUsersFromFirestore();
     getTokens();
-    messageForegroung();
+    messageForeground();
+    messageOnMessageOpendApp();
     super.initState();
   }
 
-  messageForegroung() async {
+  messageOnMessageOpendApp() async {
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {});
+  }
+
+  messageForeground() async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('___________________');
       if (message.notification != null) {
         print(message.notification!.title);
         print(message.notification!.body);
@@ -90,6 +95,7 @@ class _ChatMainState extends State<ChatMain> {
                               itemBuilder: ((context, index) {
                                 final userFilter =
                                     subAuthProvider.filterAllUsersOnline[index];
+
                                 return GestureDetector(
                                   onTap: () => Navigator.push(
                                       context,
