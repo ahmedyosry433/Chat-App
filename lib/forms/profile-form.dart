@@ -30,6 +30,7 @@ class ProfileForm extends StatelessWidget {
     final TextEditingController phoneController =
         TextEditingController(text: phoneNameValue);
     final subAuthProvider = Provider.of<AuthProvider>(context, listen: false);
+    final isSwitched = subAuthProvider.getCurrentUser['isOnline'];
     return Form(
       key: formKey,
       child: Column(
@@ -136,7 +137,18 @@ class ProfileForm extends StatelessWidget {
                           const BorderSide(color: AppColorLight.sceondColor))),
             ),
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(children: [
+              const Text('Online'),
+              Switch(
+                  value: isSwitched,
+                  onChanged: (value) {
+                    subAuthProvider.setIsOnilne(isOnline: value);
+                  }),
+            ]),
+          ),
           ElevatedButton(
             onPressed: () async {
               try {
