@@ -13,7 +13,8 @@ class MessageProvider with ChangeNotifier {
   //-----send message---------------
   sentMessage(
       {required TextEditingController entryMessageController,
-      required String chatId}) async {
+      required String chatId,
+      required resivedUserUid}) async {
     final entryMessage = entryMessageController.text;
 
     if (entryMessage.trim().isEmpty) {
@@ -29,9 +30,10 @@ class MessageProvider with ChangeNotifier {
         .doc(chatId)
         .collection('message')
         .add({
+      'toId': resivedUserUid,
       'text': entryMessage,
       'createdAt': Timestamp.now(),
-      'userId': user.uid,
+      'fromId': user.uid,
       'firstName': userData.data()!['firstName'],
       'lastName': userData.data()!['lastName'],
     });
@@ -147,6 +149,24 @@ class MessageProvider with ChangeNotifier {
       var res = await req.send();
       await res.stream.bytesToString();
     }
+  }
+
+  String createChatId({required String userReceived}) {
+    final currentUser = FirebaseAuth.instance.currentUser!.uid;
+    final userReceiving = userReceived;
+    List<String> sortedUserIds = [currentUser, userReceiving]..sort();
+    return sortedUserIds.join('_');
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getLastMessage(
+      { required String createChatId}) {
+    return FirebaseFirestore.instance
+        .collection('chat')
+        .doc(createChatId)
+        .collection('message')
+        .orderBy('createdAt', descending: true)
+        .limit(1)
+        .snapshots();
   }
 
   // String? lastMessage;

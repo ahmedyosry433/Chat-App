@@ -46,13 +46,14 @@ class _ChatMessageState extends State<ChatMessage> {
   @override
   Widget build(BuildContext context) {
     final subMessageProvider = Provider.of<MessageProvider>(context);
+    final streamData = FirebaseFirestore.instance
+        .collection('chat')
+        .doc(createChatId())
+        .collection('message')
+        .orderBy('createdAt', descending: true)
+        .snapshots();
     return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection('chat')
-          .doc(createChatId())
-          .collection('message')
-          .orderBy('createdAt', descending: true)
-          .snapshots(),
+      stream: streamData,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -69,7 +70,7 @@ class _ChatMessageState extends State<ChatMessage> {
           reverse: true,
           itemCount: loadedMessage.length,
           itemBuilder: (context, index) {
-            bool isMe = loadedMessage[index].data()['userId'] == signInUser.uid;
+            bool isMe = loadedMessage[index].data()['fromId'] == signInUser.uid;
             return SingleChildScrollView(
               child: Expanded(
                 child: Padding(

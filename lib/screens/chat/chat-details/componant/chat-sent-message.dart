@@ -11,11 +11,11 @@ import '../../../../provider/message-provider.dart';
 class ChatSentMessage extends StatelessWidget {
   ChatSentMessage(
       {super.key,
-      required this.user,
+      required this.userInfo,
       required this.changeShowEmoji,
       required this.showEmoji,
       required this.entryMessageController});
-  UserInformation? user;
+  UserInformation? userInfo;
   Function changeShowEmoji;
   bool showEmoji;
   final TextEditingController entryMessageController;
@@ -24,7 +24,7 @@ class ChatSentMessage extends StatelessWidget {
 
   String createChatId() {
     final currentUser = FirebaseAuth.instance.currentUser!.uid;
-    final userReceiving = user!.userId;
+    final userReceiving = userInfo!.userId;
     List<String> sortedUserIds = [currentUser, userReceiving]..sort();
     return sortedUserIds.join('_');
   }
@@ -86,7 +86,8 @@ class ChatSentMessage extends StatelessWidget {
                 try {
                   await subProviderMessage.sentMessage(
                       entryMessageController: entryMessageController,
-                      chatId: createChatId());
+                      chatId: createChatId(),
+                      resivedUserUid: userInfo!.userId);
                 } catch (e) {
                   ScaffoldMessenger.of(context)
                       .showSnackBar(SnackBar(content: Text('Faild Send $e')));

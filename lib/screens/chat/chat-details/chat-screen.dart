@@ -58,7 +58,7 @@ class _ChatDetailsState extends State<ChatDetails> {
               userInfor: widget.user,
             )),
             ChatSentMessage(
-              user: widget.user,
+              userInfo: widget.user,
               changeShowEmoji: changeShowEmoji,
               showEmoji: isShowEmoji,
               entryMessageController: entryMessageController,
