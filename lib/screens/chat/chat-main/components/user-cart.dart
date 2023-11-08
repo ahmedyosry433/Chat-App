@@ -69,7 +69,9 @@ class UserCard extends StatelessWidget {
                                             fontSize: 15,
                                             fontWeight: FontWeight.w700)),
                                     Text(
-                                      loadedMessage[0]['text'],
+                                      loadedMessage[0]['type'] == 'text'
+                                          ? loadedMessage[0]['text']
+                                          : 'photo',
                                       style: const TextStyle(
                                           fontSize: 11, color: Colors.grey),
                                     ),

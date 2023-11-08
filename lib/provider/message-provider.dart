@@ -1,23 +1,25 @@
 // ignore_for_file: file_names, avoid_print
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/widgets.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
 class MessageProvider with ChangeNotifier {
   //-----send message---------------
   sentMessage(
-      {required TextEditingController entryMessageController,
+      {required String messageText,
       required String chatId,
-      required resivedUserUid}) async {
-    final entryMessage = entryMessageController.text;
-
-    if (entryMessage.trim().isEmpty) {
+      required resivedUserUid,
+      required String type}) async {
+    if (messageText.trim().isEmpty) {
       return;
     }
     // get users to instance uid
@@ -31,8 +33,9 @@ class MessageProvider with ChangeNotifier {
         .collection('message')
         .add({
       'toId': resivedUserUid,
-      'text': entryMessage,
+      'text': messageText,
       'createdAt': Timestamp.now(),
+      'type': type,
       'fromId': user.uid,
       'firstName': userData.data()!['firstName'],
       'lastName': userData.data()!['lastName'],
@@ -41,12 +44,22 @@ class MessageProvider with ChangeNotifier {
     sendNotification(
         senderName:
             '${userData.data()!['firstName']} ${userData.data()!['lastName']}',
-        message: entryMessage,
+        message: messageText,
         tokens: userNotificationTokens);
 
-    entryMessageController.clear();
-
     notifyListeners();
+  }
+
+//--------get last message -----------------
+  Stream<QuerySnapshot<Map<String, dynamic>>> getLastMessage(
+      {required String createChatId}) {
+    return FirebaseFirestore.instance
+        .collection('chat')
+        .doc(createChatId)
+        .collection('message')
+        .orderBy('createdAt', descending: true)
+        .limit(1)
+        .snapshots();
   }
 
 //--------Convert data----------------------
@@ -56,7 +69,72 @@ class MessageProvider with ChangeNotifier {
     return format;
   }
 
-  //---------save all Devices tokens-------------------
+  //-----------create chat id ----------------------------------
+  String createChatId({required String userReceived}) {
+    final currentUser = FirebaseAuth.instance.currentUser!.uid;
+    final userReceiving = userReceived;
+    List<String> sortedUserIds = [currentUser, userReceiving]..sort();
+    return sortedUserIds.join('_');
+  }
+
+//------------------Image Chat Upload ------------------------
+  bool isUploading = false;
+  Future<void> pickMultiImageChat(
+      {required String chatId, required String resivedUserUid}) async {
+    final pick = ImagePicker();
+    final List<XFile> images = await pick.pickMultiImage(imageQuality: 80);
+    for (var img in images) {
+      await saveImagePickerChatInFirebase(
+          chatId: chatId, file: File(img.path), resivedUserUid: resivedUserUid);
+    }
+    isUploading = true;
+    notifyListeners();
+  }
+
+  Future pickSingleImageByCamera(
+      {required String chatId, required String resivedUserUid}) async {
+    final pick = ImagePicker();
+    final pickedFile =
+        await pick.pickImage(source: ImageSource.camera, imageQuality: 80);
+    if (pickedFile != null) {
+      File(pickedFile.path);
+      await saveImagePickerChatInFirebase(
+          chatId: chatId,
+          file: File(pickedFile.path),
+          resivedUserUid: resivedUserUid);
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> saveImagePickerChatInFirebase(
+      {required String chatId,
+      required File file,
+      required String resivedUserUid}) async {
+    //getting image file extension
+    final ext = file.path.split('.').last;
+
+    //storage file ref with path
+    final ref = FirebaseStorage.instance
+        .ref()
+        .child('images/$chatId/${DateTime.now().millisecondsSinceEpoch}.$ext');
+
+    //uploading image
+    await ref.putFile(file, SettableMetadata(contentType: 'image/$ext'));
+
+    //updating image in firestore database
+    final imageUrl = await ref.getDownloadURL();
+    await sentMessage(
+        messageText: imageUrl,
+        type: 'image',
+        resivedUserUid: resivedUserUid,
+        chatId: chatId);
+
+    notifyListeners();
+  }
+
+//-------------Notifications------------------------
+
   List<String?> userNotificationTokens = [];
   Future setUserNotificationDevice({required String currentUserUid}) async {
     await getCurrentTokensByUid(currentUserUid: currentUserUid);
@@ -93,7 +171,7 @@ class MessageProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future deleteNotificationTokensTofirebase({required String token}) async {
+  Future deleteNotificationTokensFromfirebase({required String token}) async {
     final user = FirebaseAuth.instance.currentUser;
 
     final collectionRef = FirebaseFirestore.instance
@@ -175,47 +253,4 @@ class MessageProvider with ChangeNotifier {
       await res.stream.bytesToString();
     }
   }
-
-  String createChatId({required String userReceived}) {
-    final currentUser = FirebaseAuth.instance.currentUser!.uid;
-    final userReceiving = userReceived;
-    List<String> sortedUserIds = [currentUser, userReceiving]..sort();
-    return sortedUserIds.join('_');
-  }
-
-  Stream<QuerySnapshot<Map<String, dynamic>>> getLastMessage(
-      {required String createChatId}) {
-    return FirebaseFirestore.instance
-        .collection('chat')
-        .doc(createChatId)
-        .collection('message')
-        .orderBy('createdAt', descending: true)
-        .limit(1)
-        .snapshots();
-  }
-
-  // String? lastMessage;
-  // Future<String?> getLastMessage({required String createChatId}) async {
-  //   final firestore = FirebaseFirestore.instance;
-  //   final query = firestore
-  //       .collection('chat')
-  //       .doc(createChatId)
-  //       .collection('message')
-  //       .orderBy('createdAt', descending: true)
-  //       .limit(1);
-
-  //   final querySnapshot = await query.get();
-  //   if (querySnapshot.docs.isNotEmpty) {
-
-  //     return await querySnapshot.docs[0]['text'];
-  //   }
-
-  //   return null;
-  // }
-  // String createChatId() {
-  //   final currentUser = FirebaseAuth.instance.currentUser!.uid;
-  //   final userReceiving = user!.userId;
-  //   List<String> sortedUserIds = [currentUser, userReceiving]..sort();
-  //   return sortedUserIds.join('_');
-  // }
 }

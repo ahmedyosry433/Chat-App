@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, avoid_print
 
 import 'package:chat_app/core/theme/app-colors/app-colors-light.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,7 +20,40 @@ class ChatSentMessage extends StatelessWidget {
   bool showEmoji;
   final TextEditingController entryMessageController;
 
-  String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  pickMultiImage({required BuildContext context}) async {
+    try {
+      Provider.of<MessageProvider>(context, listen: false).pickMultiImageChat(
+          chatId: createChatId(), resivedUserUid: userInfo!.userId);
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Send Multi Image Error $e')));
+    }
+  }
+
+  pickSingleImage({required BuildContext context}) async {
+    try {
+      Provider.of<MessageProvider>(context, listen: false)
+          .pickSingleImageByCamera(
+              chatId: createChatId(), resivedUserUid: userInfo!.userId);
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Send Single Image Error $e')));
+    }
+  }
+
+  sentMessagebutton({required BuildContext context}) async {
+    try {
+      await Provider.of<MessageProvider>(context, listen: false).sentMessage(
+          messageText: entryMessageController.text,
+          chatId: createChatId(),
+          resivedUserUid: userInfo!.userId,
+          type: 'text');
+      entryMessageController.clear();
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Faild Send $e')));
+    }
+  }
 
   String createChatId() {
     final currentUser = FirebaseAuth.instance.currentUser!.uid;
@@ -31,7 +64,6 @@ class ChatSentMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subProviderMessage = Provider.of<MessageProvider>(context);
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Row(
@@ -66,15 +98,15 @@ class ChatSentMessage extends StatelessWidget {
                             ))),
                   )),
                   IconButton(
-                      onPressed: () {},
+                      onPressed: () => pickSingleImage(context: context),
                       icon: const Icon(
-                        Icons.attach_file,
+                        Icons.camera_enhance,
                         color: Color.fromARGB(190, 0, 0, 0),
                       )),
                   IconButton(
-                      onPressed: () {},
+                      onPressed: () => pickMultiImage(context: context),
                       icon: const Icon(
-                        Icons.camera_enhance,
+                        Icons.photo_library_outlined,
                         color: Color.fromARGB(190, 0, 0, 0),
                       )),
                 ],
@@ -82,17 +114,7 @@ class ChatSentMessage extends StatelessWidget {
             ),
           ),
           IconButton(
-              onPressed: () async {
-                try {
-                  await subProviderMessage.sentMessage(
-                      entryMessageController: entryMessageController,
-                      chatId: createChatId(),
-                      resivedUserUid: userInfo!.userId);
-                } catch (e) {
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(content: Text('Faild Send $e')));
-                }
-              },
+              onPressed: () => sentMessagebutton(context: context),
               icon: const Icon(
                 Icons.send,
                 color: AppColorLight.primaryColor,

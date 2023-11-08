@@ -14,11 +14,10 @@ class AllContact extends StatelessWidget {
   const AllContact({super.key});
 
   Future logOut(BuildContext context) async {
-    
     try {
       final myToken = await FirebaseMessaging.instance.getToken();
       await Provider.of<MessageProvider>(context, listen: false)
-          .deleteNotificationTokensTofirebase(token: myToken!);
+          .deleteNotificationTokensFromfirebase(token: myToken!);
       Provider.of<AuthProvider>(context, listen: false).logOut();
       Navigator.pushNamed(context, '/splash');
       ScaffoldMessenger.of(context)

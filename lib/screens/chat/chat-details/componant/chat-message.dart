@@ -55,9 +55,6 @@ class _ChatMessageState extends State<ChatMessage> {
     return StreamBuilder(
       stream: streamData,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return const Center(child: Text('No Message Found.'));
         }
@@ -91,34 +88,44 @@ class _ChatMessageState extends State<ChatMessage> {
                           ),
                         ),
                         Container(
-                          decoration: isMe
-                              ? const BoxDecoration(
-                                  color: AppColorLight.blueColor,
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(30),
-                                    bottomLeft: Radius.circular(30),
-                                    bottomRight: Radius.circular(30),
-                                  ))
-                              : const BoxDecoration(
-                                  color: AppColorLight.sceondColor,
-                                  borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(30),
-                                    bottomLeft: Radius.circular(30),
-                                    bottomRight: Radius.circular(30),
-                                  )),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
-                            child: Text(
-                              loadedMessage[index].data()['text'],
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: isMe
-                                      ? AppColorLight.whiteColor
-                                      : AppColorLight.blackColor),
-                            ),
-                          ),
-                        ),
+                            decoration: isMe
+                                ? const BoxDecoration(
+                                    color: AppColorLight.blueColor,
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(30),
+                                      bottomLeft: Radius.circular(30),
+                                      bottomRight: Radius.circular(30),
+                                    ))
+                                : const BoxDecoration(
+                                    color: AppColorLight.sceondColor,
+                                    borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(30),
+                                      bottomLeft: Radius.circular(30),
+                                      bottomRight: Radius.circular(30),
+                                    )),
+                            child: Padding(
+                              padding:
+                                  loadedMessage[index].data()['type'] == 'text'
+                                      ? const EdgeInsets.symmetric(
+                                          horizontal: 20, vertical: 10)
+                                      : const EdgeInsets.symmetric(
+                                          horizontal: 5, vertical: 15),
+                              child:
+                                  loadedMessage[index].data()['type'] == 'text'
+                                      ? Text(
+                                          loadedMessage[index].data()['text'],
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: isMe
+                                                  ? AppColorLight.whiteColor
+                                                  : AppColorLight.blackColor),
+                                        )
+                                      : Image.network(
+                                          loadedMessage[index].data()['text'],
+                                          height: 250,
+                                          width: 200,
+                                        ),
+                            )),
                         Padding(
                           padding: const EdgeInsets.only(right: 8, top: 3),
                           child: Text(
