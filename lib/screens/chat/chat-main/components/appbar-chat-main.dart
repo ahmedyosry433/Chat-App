@@ -2,11 +2,27 @@
 
 import 'package:chat_app/core/theme/app-colors/app-colors-light.dart';
 import 'package:chat_app/provider/auth-provider.dart';
+import 'package:chat_app/provider/message-provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AppbarMainChat extends StatelessWidget {
   const AppbarMainChat({super.key});
+
+  Future logOut(BuildContext context) async {
+    try {
+      final myToken = await FirebaseMessaging.instance.getToken();
+      await Provider.of<MessageProvider>(context, listen: false)
+          .deleteNotificationTokensTofirebase(token: myToken!);
+      Provider.of<AuthProvider>(context, listen: false).logOut();
+      Navigator.pushNamed(context, '/splash');
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('LogOut sucsess')));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,27 +99,11 @@ class AppbarMainChat extends StatelessWidget {
                               content: const Text('You Want to Logout ?'),
                               actions: [
                                 TextButton(
-                                  onPressed: () {
-                                    try {
-                                      Provider.of<AuthProvider>(context,
-                                              listen: false)
-                                          .logOut();
-                                      Navigator.pushNamed(context, '/splash');
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text('LogOut sucsess')));
-                                    } catch (e) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                              SnackBar(content: Text('$e')));
-                                    }
-                                  },
+                                  onPressed: () => logOut(context),
                                   child: const Text("Yes"),
                                 ),
                                 TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
+                                  onPressed: () => Navigator.of(context).pop(),
                                   child: const Text("Cansel"),
                                 ),
                               ],

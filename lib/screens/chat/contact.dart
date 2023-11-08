@@ -1,6 +1,8 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, use_build_context_synchronously
 
+import 'package:chat_app/provider/message-provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,6 +12,21 @@ import 'chat-details/chat-screen.dart';
 
 class AllContact extends StatelessWidget {
   const AllContact({super.key});
+
+  Future logOut(BuildContext context) async {
+    
+    try {
+      final myToken = await FirebaseMessaging.instance.getToken();
+      await Provider.of<MessageProvider>(context, listen: false)
+          .deleteNotificationTokensTofirebase(token: myToken!);
+      Provider.of<AuthProvider>(context, listen: false).logOut();
+      Navigator.pushNamed(context, '/splash');
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('LogOut sucsess')));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,29 +102,12 @@ class AllContact extends StatelessWidget {
                                     content: const Text('You Want to Logout ?'),
                                     actions: [
                                       TextButton(
-                                        onPressed: () {
-                                          try {
-                                            Provider.of<AuthProvider>(context,
-                                                    listen: false)
-                                                .logOut();
-                                            Navigator.pushNamed(
-                                                context, '/splash');
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(const SnackBar(
-                                                    content: Text(
-                                                        'LogOut sucsess')));
-                                          } catch (e) {
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(SnackBar(
-                                                    content: Text('$e')));
-                                          }
-                                        },
+                                        onPressed: () => logOut(context),
                                         child: const Text("Yes"),
                                       ),
                                       TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
                                         child: const Text("Cansel"),
                                       ),
                                     ],

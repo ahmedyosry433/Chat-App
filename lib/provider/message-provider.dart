@@ -65,6 +65,7 @@ class MessageProvider with ChangeNotifier {
     if (token != null) {
       if (userNotificationTokens.isEmpty) {
         userNotificationTokens.add(token);
+        await saveNotificationTokensTofirebase(token: token);
       } else {
         var savedToken = userNotificationTokens
             .firstWhere((item) => item == token, orElse: () => null);
@@ -72,28 +73,52 @@ class MessageProvider with ChangeNotifier {
           return;
         } else {
           userNotificationTokens.add(token);
+          await saveNotificationTokensTofirebase(token: token);
         }
       }
     }
-    await saveNotificationTokensTofirebase();
 
     notifyListeners();
   }
 
-  Future saveNotificationTokensTofirebase() async {
+  Future saveNotificationTokensTofirebase({required String token}) async {
     final user = FirebaseAuth.instance.currentUser;
-    for (var token in userNotificationTokens) {
-      await FirebaseFirestore.instance
-          .collection('user')
-          .doc(user!.uid)
-          .collection('tokens')
-          .add({'deviceToken': token});
-    }
+
+    await FirebaseFirestore.instance
+        .collection('user')
+        .doc(user!.uid)
+        .collection('tokens')
+        .add({'deviceToken': token});
+
     notifyListeners();
+  }
+
+  Future deleteNotificationTokensTofirebase({required String token}) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    final collectionRef = FirebaseFirestore.instance
+        .collection('user')
+        .doc(user!.uid)
+        .collection('tokens');
+    final querySnapshot = await collectionRef.get();
+
+    // Create a batch for deleting documents
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    // Add delete operations for each document to the batch
+    for (var doc in querySnapshot.docs) {
+      if (doc['deviceToken'] == token) {
+        batch.delete(doc.reference);
+        userNotificationTokens.remove(token);
+      }
+    }
+
+    // Commit the batch to delete all documents
+    await batch.commit();
   }
 
 //--------------------------------------------
-  // List currentUserTokens = [];
+
   getCurrentTokensByUid({required String currentUserUid}) async {
     QuerySnapshot userSnapshots = await FirebaseFirestore.instance
         .collection('user')
@@ -159,7 +184,7 @@ class MessageProvider with ChangeNotifier {
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getLastMessage(
-      { required String createChatId}) {
+      {required String createChatId}) {
     return FirebaseFirestore.instance
         .collection('chat')
         .doc(createChatId)

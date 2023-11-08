@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, avoid_print
+// ignore_for_file: file_names, avoid_print, use_build_context_synchronously
 
 import 'dart:io';
 
@@ -30,7 +30,6 @@ class AuthProvider with ChangeNotifier {
     required String phone,
   }) async {
     User? user = FirebaseAuth.instance.currentUser;
-    // final myToken = await FirebaseMessaging.instance.getToken();
     await FirebaseFirestore.instance.collection('user').doc(user!.uid).set({
       'userId': user.uid,
       'firstName': firstName,
@@ -60,9 +59,13 @@ class AuthProvider with ChangeNotifier {
   Future logOut() async {
     await setIsOnilne(isOnline: false);
     await setLastSeen();
+    
     await FirebaseAuth.instance.signOut();
+
     notifyListeners();
   }
+
+  
 
   Future<void> resetPassword({required String email}) async {
     try {
@@ -232,26 +235,6 @@ class AuthProvider with ChangeNotifier {
     await setIsImage();
 
     notifyListeners();
-  }
-
-// --------------------- message-----------------------------------------
-  Future<DocumentSnapshot?> getLastMessage(
-      {required String createChatId}) async {
-    final firestore = FirebaseFirestore.instance;
-    final query = firestore
-        .collection('chat')
-        .doc(createChatId)
-        .collection('message')
-        .orderBy('createdAt', descending: true)
-        .limit(1);
-
-    final querySnapshot = await query.get();
-    if (querySnapshot.docs.isNotEmpty) {
-      getUsersFromFirestore();
-
-      return querySnapshot.docs[0];
-    }
-    return null;
   }
 
   //-------------------------Search--------------------------------------
