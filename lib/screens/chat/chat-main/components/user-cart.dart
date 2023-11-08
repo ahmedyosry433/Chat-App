@@ -34,9 +34,6 @@ class UserCard extends StatelessWidget {
                       createChatId: subMessageProvider.createChatId(
                           userReceived: userFilter.userId)),
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                       return const Center(child: Text(''));
                     }
