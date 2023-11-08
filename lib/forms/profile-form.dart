@@ -29,6 +29,7 @@ class ProfileForm extends StatelessWidget {
 
     final TextEditingController phoneController =
         TextEditingController(text: phoneNameValue);
+
     final subAuthProvider = Provider.of<AuthProvider>(context, listen: false);
     final isSwitched = subAuthProvider.getCurrentUser['isOnline'];
     return Form(

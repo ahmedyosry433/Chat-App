@@ -17,6 +17,22 @@ class LoginPage extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  logIn({required BuildContext context}) async {
+    try {
+      if (formKey.currentState!.validate()) {
+        await Provider.of<AuthProvider>(context, listen: false).logIn(
+            emailController: _emailController,
+            passwordController: _passwordController);
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Login Is Sucess')));
+        Navigator.popAndPushNamed(context, '/splash');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Faild Login $e')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final subAuthProvider = Provider.of<AuthProvider>(context, listen: true);
@@ -114,22 +130,7 @@ class LoginPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 15),
                     ElevatedButton(
-                      onPressed: () async {
-                        try {
-                          if (formKey.currentState!.validate()) {
-                            await subAuthProvider.logIn(
-                                emailController: _emailController,
-                                passwordController: _passwordController);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Login Is Sucess')));
-                            Navigator.popAndPushNamed(context, '/splash');
-                          }
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Faild Login $e')));
-                        }
-                      },
+                      onPressed: () => logIn(context: context),
                       style: ButtonStyle(
                         shape: MaterialStateProperty.all(
                           RoundedRectangleBorder(

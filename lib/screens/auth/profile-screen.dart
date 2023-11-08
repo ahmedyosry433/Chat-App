@@ -1,7 +1,5 @@
 // ignore_for_file: must_be_immutable, file_names
 
-import 'dart:io';
-
 import 'package:chat_app/provider/auth-provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,7 +12,10 @@ class Profile extends StatelessWidget {
 
   GlobalKey<FormState> formKey = GlobalKey();
 
-  File? selectImage;
+  pickedImage({required BuildContext context}) async {
+    await Provider.of<AuthProvider>(context, listen: false)
+        .pickImageProfile(ImageSource.gallery);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,11 +56,7 @@ class Profile extends StatelessWidget {
                       bottom: 0,
                       right: 0,
                       child: GestureDetector(
-                        onTap: () async {
-                          await Provider.of<AuthProvider>(context,
-                                  listen: false)
-                              .pickImageProfile(ImageSource.gallery);
-                        },
+                        onTap: () => pickedImage(context: context),
                         child: !subAuthProvider.isLoad
                             ? const CircularProgressIndicator()
                             : const Icon(Icons.add_a_photo_sharp),
