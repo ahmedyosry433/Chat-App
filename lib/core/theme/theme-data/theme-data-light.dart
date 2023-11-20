@@ -12,4 +12,7 @@ ThemeData getThemeDataLight() => ThemeData(
               const EdgeInsets.symmetric(horizontal: 110, vertical: 20),
             ))),
     textTheme: const TextTheme(
-        headlineMedium: TextStyle(fontSize: 30, fontWeight: FontWeight.bold,color: AppColorLight.blackColor)));
+        headlineMedium: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+            color: AppColorLight.blackColor)));
