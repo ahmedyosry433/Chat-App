@@ -30,23 +30,18 @@ To install the Chat App on your device, follow these steps:
 
 ## Screenshots
 
-![Screenshot 1](<insert_screenshot1_link_here>)
-*Caption for Screenshot 1*
-
-![Screenshot 2](<insert_screenshot2_link_here>)
-*Caption for Screenshot 2*
-
-![Screenshot 3](<insert_screenshot3_link_here>)
-*Caption for Screenshot 3*
+![Screenshot 1](https://imgur.com/TQp74kH)
+![Screenshot 2](https://imgur.com/Fpe5e3h)
+![Screenshot 3](https://imgur.com/uAk7JZf)
+![Screenshot 4](https://imgur.com/HBJWwAn)
 
 ## Getting Started
 
 To run the app on your local machine, follow these steps:
 
-1. Clone the repository: `git clone https://github.com/your-username/chat-app.git`
-2. Navigate to the project directory: `cd chat-app`
-3. Install dependencies: `flutter pub get`
-4. Run the app: `flutter run`
+1. Clone the repository
+2. Install dependencies: `flutter pub get`
+3. Run the app: `flutter run`
 
 ## Contributing
 
