@@ -30,7 +30,7 @@ To install the Chat App on your device, follow these steps:
 
 ## Screenshots
 
-![Screenshot 1]([Imgur](https://i.imgur.com/HBJWwAn.jpg))
+![Screenshot 1](https://i.imgur.com/HBJWwAn.jpg)
 ![Screenshot 2](https://imgur.com/Fpe5e3h)
 ![Screenshot 3](https://imgur.com/uAk7JZf)
 ![Screenshot 4](https://imgur.com/HBJWwAn)
