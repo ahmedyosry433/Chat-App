@@ -2,6 +2,10 @@
 
 Welcome to the Chat App repository! This Flutter-based mobile application allows users to engage in text and image-based conversations, leveraging the power of Firebase for real-time database functionality. The app provides a clean and responsive user interface, ensuring an optimal chatting experience.
 
+## Screenshots
+
+![Screenshots](https://i.imgur.com/egbXvw3.png)
+
 ## Features
 
 1. **Chat Functionality**
@@ -27,13 +31,6 @@ To install the Chat App on your device, follow these steps:
 1. Download the APK file from the [Google Drive link](<insert_google_drive_link_here>).
 2. Enable installation from unknown sources in your device settings.
 3. Install the APK file on your device.
-
-## Screenshots
-
-
-![Screenshots](https://i.imgur.com/egbXvw3.png)
-
-
 
 
 ## Getting Started
