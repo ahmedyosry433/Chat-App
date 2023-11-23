@@ -29,7 +29,7 @@ Welcome to the Chat App repository! This Flutter-based mobile application allows
 
 To install the Chat App on your device, follow these steps:
 
-1. Download the APK file from the [Google Drive link](<insert_google_drive_link_here>).
+1. Download the APK file from the [Google Drive link](<https://drive.google.com/drive/u/1/folders/1w2bDNTW-hT_3kqOzvSOgw0q7aBJ16C8e>).
 2. Enable installation from unknown sources in your device settings.
 3. Install the APK file on your device.
 
