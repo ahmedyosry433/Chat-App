@@ -41,7 +41,7 @@ To install the Chat App on your device, follow these steps:
 
 
 =======
->>>>>>> 7f1ccb92735bd0584a309722ff3e074371b2b4b2
+
 
 ## Getting Started
 
